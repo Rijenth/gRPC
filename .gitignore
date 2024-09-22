@@ -1,0 +1,6 @@
+#go
+main
+
+.vscode/
+./web/.vscode/
+./web/node_modules/

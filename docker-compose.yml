@@ -1,0 +1,52 @@
+services:
+  vue:
+    image: node:22.9.0
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    volumes:
+      - ./web/src:/app/src
+      - /app/node_modules
+    ports:
+      - 5173:5173
+    restart: always
+
+  go:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      Port: 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+    healthcheck:
+      test: ["CMD", "mysql", "-uroot", "-proot", "-e", "SELECT 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+    ports:
+      - "3306:3306"
+    restart: always
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d/:ro
+    
+  adminer:
+    depends_on:
+      - mysql
+    image: adminer
+    ports:
+      - 8080:8080
+    restart: always
+ 
