@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "internal/grpc/user";
+
+service UserService {
+    rpc GetUserById(GetUserByIdRequest) returns (UserResponse);
+    
+    rpc CreateUser(CreateUserRequest) returns (UserResponse);
+
+    rpc UpdateUser(UpdateUserRequest) returns (UserResponse);
+
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+}
+
+message User {
+    int32 id = 1;
+    string username = 2;
+    string email = 3;
+    string first_name = 4;
+    string last_name = 5;
+    string date_of_birth = 6;
+    string address = 7;
+    string phone_number = 8;
+    string profile_picture = 9;
+    string bio = 10;
+    bool is_active = 11;
+    bool is_admin = 12;
+    string created_at = 13;
+    string updated_at = 14;
+    string last_login = 15;
+}
+
+message GetUserByIdRequest {
+    int32 id = 1;
+}
+
+message UserResponse {
+    User user = 1;
+}
+
+message CreateUserRequest {
+    string username = 1;
+    string password = 2;
+    string email = 3;
+    string first_name = 4;
+    string last_name = 5;
+    string date_of_birth = 6;
+    string address = 7;
+    string phone_number = 8;
+    string profile_picture = 9;
+    string bio = 10;
+}
+
+message UpdateUserRequest {
+    int32 id = 1;
+    string username = 2;
+    string email = 3;
+    string first_name = 4;
+    string last_name = 5;
+    string date_of_birth = 6;
+    string address = 7;
+    string phone_number = 8;
+    string profile_picture = 9;
+    string bio = 10;
+    bool is_active = 11;
+    bool is_admin = 12;
+}
+
+message DeleteUserRequest {
+    int32 id = 1;
+}
+
+message DeleteUserResponse {
+    bool success = 1;
+}
