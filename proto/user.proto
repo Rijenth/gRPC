@@ -7,13 +7,15 @@ option go_package = "internal/grpc/user";
 import "google/protobuf/timestamp.proto";
 
 service UserService {
-    rpc GetUserById(GetUserByIdRequest) returns (UserResponse);
+    rpc Index(Empty) returns (GetAllUsersResponse);
+
+    rpc Get(GetUserByIdRequest) returns (UserResponse);
     
-    rpc CreateUser(CreateUserRequest) returns (UserResponse);
+    rpc Store(CreateUserRequest) returns (UserResponse);
 
-    rpc UpdateUser(UpdateUserRequest) returns (UserResponse);
+    rpc Patch(UpdateUserRequest) returns (UserResponse);
 
-    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+    rpc Delete(DeleteUserRequest) returns (DeleteUserResponse);
 }
 
 message User {
@@ -40,6 +42,12 @@ message GetUserByIdRequest {
 
 message UserResponse {
     User user = 1;
+}
+
+message Empty {}
+
+message GetAllUsersResponse {
+    repeated User users = 1;
 }
 
 message CreateUserRequest {

@@ -11,16 +11,53 @@ import (
 
 // UserController implémente les services gRPC pour l'utilisateur.
 type UserController struct {
-	uc *usecase.UserUsecase
+	usecase *usecase.UserUsecase
 	pb.UnimplementedUserServiceServer
 }
 
 func NewUserController(uc *usecase.UserUsecase) *UserController {
-	return &UserController{uc: uc}
+	return &UserController{usecase: uc}
 }
 
-func (c *UserController) GetUserById(ctx context.Context, req *pb.GetUserByIdRequest) (*pb.UserResponse, error) {
-	user, err := c.uc.GetUserByID(ctx, int(req.Id))
+func (c *UserController) Index(ctx context.Context, request *pb.Empty) (*pb.GetAllUsersResponse, error) {
+	users, err := c.usecase.GetAllUsers(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var pbUsers []*pb.User
+
+	for _, user := range users {
+		var lastLogin *timestamppb.Timestamp
+		if user.LastLogin != nil {
+			lastLogin = timestamppb.New(*user.LastLogin)
+		}
+
+		pbUsers = append(pbUsers, &pb.User{
+			Id:             int32(user.ID),
+			Username:       user.Username,
+			Email:          user.Email,
+			FirstName:      user.FirstName,
+			LastName:       user.LastName,
+			DateOfBirth:    timestamppb.New(user.DateOfBirth),
+			Address:        user.Address,
+			PhoneNumber:    user.PhoneNumber,
+			CreatedAt:      timestamppb.New(user.CreatedAt),
+			UpdatedAt:      timestamppb.New(user.UpdatedAt),
+			LastLogin:      lastLogin,
+			IsActive:       user.IsActive,
+			IsAdmin:        user.IsAdmin,
+			ProfilePicture: user.ProfilePicture,
+			Bio:            user.Bio,
+		})
+	}
+
+	return &pb.GetAllUsersResponse{Users: pbUsers}, nil
+}
+
+func (c *UserController) Get(ctx context.Context, request *pb.GetUserByIdRequest) (*pb.UserResponse, error) {
+	user, err := c.usecase.GetUserByID(ctx, int(request.Id))
 	if err != nil {
 		return nil, err
 	}
@@ -37,18 +74,18 @@ func (c *UserController) GetUserById(ctx context.Context, req *pb.GetUserByIdReq
 			Email:          user.Email,
 			FirstName:      user.FirstName,
 			LastName:       user.LastName,
-			DateOfBirth:    timestamppb.New(user.DateOfBirth), // Conversion de time.Time
+			DateOfBirth:    timestamppb.New(user.DateOfBirth),
 			Address:        user.Address,
 			PhoneNumber:    user.PhoneNumber,
-			CreatedAt:      timestamppb.New(user.CreatedAt), // Conversion de time.Time
-			UpdatedAt:      timestamppb.New(user.UpdatedAt), // Conversion de time.Time
-			LastLogin:      lastLogin,                       // Peut être nil si LastLogin n'est pas défini
-			IsActive:       user.IsActive,                   // Booléen géré directement
-			IsAdmin:        user.IsAdmin,                    // Booléen géré directement
+			CreatedAt:      timestamppb.New(user.CreatedAt),
+			UpdatedAt:      timestamppb.New(user.UpdatedAt),
+			LastLogin:      lastLogin,
+			IsActive:       user.IsActive,
+			IsAdmin:        user.IsAdmin,
 			ProfilePicture: user.ProfilePicture,
 			Bio:            user.Bio,
 		},
 	}, nil
 }
 
-// TODO: CreateUser, UpdateUser, DeleteUser.
+// TODO: Post, Patch, Delete.
