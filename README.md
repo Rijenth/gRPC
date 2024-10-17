@@ -93,9 +93,3 @@ Permet de **simuler des requêtes** vers un serveur gRPC et d'interagir avec les
         ```
 
    Ces commandes permettent de tester rapidement les services gRPC exposés par le serveur et de simuler des appels client-serveur.
-
-   
-
-
-
-

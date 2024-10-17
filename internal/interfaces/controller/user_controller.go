@@ -9,7 +9,6 @@ import (
 	"github.com/rijenth/gRPC/internal/usecase"
 )
 
-// UserController implémente les services gRPC pour l'utilisateur.
 type UserController struct {
 	usecase *usecase.UserUsecase
 	pb.UnimplementedUserServiceServer

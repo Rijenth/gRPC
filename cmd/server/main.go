@@ -10,7 +10,7 @@ import (
 	"github.com/rijenth/gRPC/internal/infrastructure/repository"
 	"github.com/rijenth/gRPC/internal/interfaces/controller"
 	"github.com/rijenth/gRPC/internal/usecase"
-	"google.golang.org/grpc/reflection" // Ajoutez cette ligne pour la reflection
+	"google.golang.org/grpc/reflection"
 
 	"google.golang.org/grpc"
 )
