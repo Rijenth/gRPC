@@ -1,27 +1,6 @@
-<template>
-  <div class="container">
-    <nav class="menu">
-      <button 
-        v-for="option in options" 
-        :key="option.value" 
-        @click="selectedOption = option.value"
-        :class="{ active: selectedOption === option.value }">
-        {{ option.label }}
-      </button>
-    </nav>
-
-    <div class="message-box">
-      <p v-if="!selectedOption" class="info-message">
-        Sélectionnez une option pour faire apparaître le composant adéquat
-      </p>
-
-      <p v-else>{{ getMessage(selectedOption) }}</p>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue';
+import IndexUser from './components/indexUser.vue';
 
 interface Option {
   label: 'INDEX' | 'GET' | 'POST' | 'PATCH' | 'DELETE';
@@ -38,23 +17,41 @@ const options: Option[] = [
 
 const selectedOption = ref<string>('');
 
-const getMessage = (option: string): string => {
+const getComponent = (option: string) => {
   switch (option) {
     case 'index':
-      return 'Index component';
     case 'get':
-      return 'Get component';
     case 'post':
-      return 'Post component';
     case 'patch':
-      return 'Patch component';
     case 'delete':
-      return 'Delete component';
+      return IndexUser;
     default:
-      return 'Sélectionnez une option pour faire apparaître le composant adéquat';
+      return null;
   }
 };
 </script>
+
+<template>
+  <div class="container">
+    <nav class="menu">
+      <button 
+        v-for="option in options" 
+        :key="option.value" 
+        @click="selectedOption = option.value"
+        :class="{ active: selectedOption === option.value }">
+        {{ option.label }}
+      </button>
+    </nav>
+
+    <div class="main-body">
+      <p v-if="!selectedOption" class="info-message">
+        Sélectionnez une option pour faire apparaître le composant adéquat
+      </p>
+
+      <component :is="getComponent(selectedOption)" v-else />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .container {
@@ -96,7 +93,7 @@ button.active {
   font-weight: bold;
 }
 
-.message-box {
+.main-body {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -104,7 +101,7 @@ button.active {
   padding: 20px;
 }
 
-.message-box p {
+.main-body p {
   margin: 0;
   font-size: 18px;
   text-align: center;
