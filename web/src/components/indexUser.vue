@@ -52,29 +52,37 @@ const users = ref<User[]>([
 </script>
 
 <template>
-    <table class="user-table">
-      <thead>
-        <tr>
-          <th>Nom d'utilisateur</th>
-          <th>Adresse mail</th>
-          <th>Prénom</th>
-          <th>Nom</th>
-          <th>Biographie</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <td>{{ user.username }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.firstName }}</td>
-          <td>{{ user.lastName }}</td>
-          <td>{{ user.bio }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="container">
+        <table class="user-table">
+        <thead>
+            <tr>
+            <th>Nom d'utilisateur</th>
+            <th>Adresse mail</th>
+            <th>Prénom</th>
+            <th>Nom</th>
+            <th>Biographie</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="user in users" :key="user.id">
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.firstName }}</td>
+            <td>{{ user.lastName }}</td>
+            <td>{{ user.bio }}</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
 </template>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+}
+
 .user-table {
   width: 100%;
   border-collapse: collapse;
@@ -100,5 +108,20 @@ const users = ref<User[]>([
 .user-table tr:hover {
   background-color: #f1f1f1;
   cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .user-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .user-table th,
+  .user-table td {
+    padding: 10px;
+    font-size: 14px;
+  }
 }
 </style>
