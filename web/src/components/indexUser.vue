@@ -4,8 +4,21 @@ import { User } from '../generated/user';
 import { UserServiceClient } from '../generated/user.client';
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
 import Error from './error.vue';
+import ResponsiveTable from './common/responsive_table.vue';
+import { ResponsiveTableType } from '../types/responsive_table.type';
 
-const users = ref<User[]>([]);
+const data = ref<ResponsiveTableType>({
+  bold: true,
+  matrix: [
+    [
+      { value: 'Nom d\'utilisateur' },
+      { value: 'Adresse mail' },
+      { value: 'Prénom' },
+      { value: 'Nom' },
+      { value: 'Biographie' },
+    ],
+  ],
+});
 const errorMessage = ref<string | null>(null);
 
 const transport = new GrpcWebFetchTransport({
@@ -20,7 +33,16 @@ const fetchAllUsers = async () => {
     const request = await userService.index({});
 
     if (request.response && request.response.users) {
-      users.value = request.response.users;
+      request.response.users.forEach((user: User) => {
+        data.value.matrix.push([
+          { value: user.username },
+          { value: user.email },
+          { value: user.firstName },
+          { value: user.lastName },
+          { value: user.bio },
+        ]);
+      });
+
       return;
     }
 
@@ -44,27 +66,8 @@ onMounted(() => {
 <template>
     <div class="container">
         <Error v-if="errorMessage" :message="errorMessage" />
-
-        <table class="user-table">
-        <thead>
-            <tr>
-            <th>Nom d'utilisateur</th>
-            <th>Adresse mail</th>
-            <th>Prénom</th>
-            <th>Nom</th>
-            <th>Biographie</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="user in users" :key="user.id">
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.firstName }}</td>
-            <td>{{ user.lastName }}</td>
-            <td>{{ user.bio }}</td>
-            </tr>
-        </tbody>
-        </table>
+        
+        <ResponsiveTable :table="data" />
     </div>
 </template>
 
