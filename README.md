@@ -14,6 +14,7 @@ Ce projet a pour objectif d'approfondir mes connaissances sur le **fonctionnemen
 - **Vue 3**
 - **Golang**
 - **gRPC** et Protocol Buffers (**.proto**)
+- **Envoy**
 - **Docker** et **Docker-compose**
 
 ## Instructions d'installation et d'exécution
@@ -93,3 +94,26 @@ Permet de **simuler des requêtes** vers un serveur gRPC et d'interagir avec les
         ```
 
    Ces commandes permettent de tester rapidement les services gRPC exposés par le serveur et de simuler des appels client-serveur.
+
+### 4. Génération des fichiers .proto
+   Les commandes suivantes servent à générer les stubs à partir du fichier **user.proto**.
+   Elle doivent être executer depuis le repertoire principal du projet.
+
+   - **Fichier backend** :
+     ```bash
+      protoc --go_out=. --go-grpc_out=. proto/user.proto
+     ```
+
+   - **Fichier frontend** :
+     ```bash
+     protoc --ts_out ./web/src/generated --proto_path "./proto" ./proto/user.proto
+     ```
+
+     **Regenerer l'ensemble des fichiers**
+      ```bash
+      protoc --go_out=. --go-grpc_out=. proto/user.proto &&
+      protoc --ts_out ./web/src/generated --proto_path "./proto" ./proto/user.proto
+     ```
+
+
+

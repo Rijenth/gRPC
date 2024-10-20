@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type Config struct {
+type DatabaseConfig struct {
 	DBUser     string
 	DBPassword string
 	DBName     string
@@ -15,14 +15,14 @@ type Config struct {
 	DBPort     string
 }
 
-func LoadConfig() (*Config, error) {
+func LoadDatabaseConfig() (*DatabaseConfig, error) {
 	err := godotenv.Load()
 
 	if err != nil {
-		log.Println("No .env file found, relying on environment variables")
+		log.Fatalf("Error loading .env file %v", err)
 	}
 
-	config := &Config{
+	config := &DatabaseConfig{
 		DBUser:     os.Getenv("DB_USER"),
 		DBPassword: os.Getenv("DB_PASSWORD"),
 		DBName:     os.Getenv("DB_NAME"),

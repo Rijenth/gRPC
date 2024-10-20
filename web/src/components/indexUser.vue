@@ -1,58 +1,50 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import User from '../models/user';
+import { onMounted, ref } from 'vue';
+import { User } from '../generated/user';
+import { UserServiceClient } from '../generated/user.client';
+import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
+import Error from './error.vue';
 
-const users = ref<User[]>([
-  new User({
-    id: 1,
-    username: 'johnDoe',
-    email: 'john@example.com',
-    firstName: 'John',
-    lastName: 'Doe',
-    dateOfBirth: new Date('1990-01-01'),
-    address: '123 Street, City',
-    phoneNumber: '1234567890',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    isActive: true,
-    profilePicture: '',
-    bio: 'Software developer with 10 years of experience',
-  }),
-  new User({
-    id: 2,
-    username: 'janeDoe',
-    email: 'jane@example.com',
-    firstName: 'Jane',
-    lastName: 'Doe',
-    dateOfBirth: new Date('1992-05-15'),
-    address: '456 Avenue, City',
-    phoneNumber: '9876543210',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    isActive: true,
-    profilePicture: '',
-    bio: 'Graphic designer with a love for creative work',
-  }),
-  new User({
-    id: 3,
-    username: 'jackSmith',
-    email: 'jack@example.com',
-    firstName: 'Jack',
-    lastName: 'Smith',
-    dateOfBirth: new Date('1988-09-22'),
-    address: '789 Boulevard, City',
-    phoneNumber: '1122334455',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    isActive: true,
-    profilePicture: '',
-    bio: 'Project manager with a knack for agile methodologies',
-  }),
-]);
+const users = ref<User[]>([]);
+const errorMessage = ref<string | null>(null);
+
+const transport = new GrpcWebFetchTransport({
+  baseUrl: "http://localhost:8000",
+})
+const userService = new UserServiceClient(transport)
+
+const fetchAllUsers = async () => {
+  try {
+    errorMessage.value = null;
+
+    const request = await userService.index({});
+
+    if (request.response && request.response.users) {
+      users.value = request.response.users;
+      return;
+    }
+
+    errorMessage.value = "Aucun utilisateur trouvé";
+  } catch (error) {
+    if (error instanceof Error) {
+      errorMessage.value = error.message;
+      return;
+    }
+    
+    console.error(error);
+    errorMessage.value = "Une erreur inconnue s'est produite, (voir la console pour plus de détails)";
+  }
+};
+
+onMounted(() => {
+  fetchAllUsers();
+});
 </script>
 
 <template>
     <div class="container">
+        <Error v-if="errorMessage" :message="errorMessage" />
+
         <table class="user-table">
         <thead>
             <tr>
