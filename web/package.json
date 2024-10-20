@@ -7,8 +7,9 @@
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint ./src",
-    "format": "prettier ./src --write"
+    "format": "prettier ./src --write",
+    "format:lint": "pnpm run lint && pnpm run format",
+    "lint": "eslint ./src"
   },
   "dependencies": {
     "@protobuf-ts/grpcweb-transport": "^2.9.4",
