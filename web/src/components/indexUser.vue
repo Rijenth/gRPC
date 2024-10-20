@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { User } from '../generated/user';
-import { UserServiceClient } from '../generated/user.client';
-import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
-import ErrorMessage from './error_message.vue';
-import ResponsiveTable from './common/responsive_table.vue';
-import { ResponsiveTableType } from '../types/responsive_table.type';
+import { onMounted, ref } from "vue";
+import { User } from "../generated/user";
+import { UserServiceClient } from "../generated/user.client";
+import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
+import ErrorMessage from "./error_message.vue";
+import ResponsiveTable from "./common/responsive_table.vue";
+import { ResponsiveTableType } from "../types/responsive_table.type";
 
 const data = ref<ResponsiveTableType>({
   bold: true,
   matrix: [
     [
-      { value: 'Nom d\'utilisateur' },
-      { value: 'Adresse mail' },
-      { value: 'Prénom' },
-      { value: 'Nom' },
-      { value: 'Biographie' },
+      { value: "Nom d'utilisateur" },
+      { value: "Adresse mail" },
+      { value: "Prénom" },
+      { value: "Nom" },
+      { value: "Biographie" },
     ],
   ],
 });
@@ -23,8 +23,8 @@ const errorMessage = ref<string | null>(null);
 
 const transport = new GrpcWebFetchTransport({
   baseUrl: "http://localhost:8000",
-})
-const userService = new UserServiceClient(transport)
+});
+const userService = new UserServiceClient(transport);
 
 const fetchAllUsers = async () => {
   try {
@@ -52,9 +52,10 @@ const fetchAllUsers = async () => {
       errorMessage.value = error.message;
       return;
     }
-    
+
     console.error(error);
-    errorMessage.value = "Une erreur inconnue s'est produite, (voir la console pour plus de détails)";
+    errorMessage.value =
+      "Une erreur inconnue s'est produite, (voir la console pour plus de détails)";
   }
 };
 
@@ -64,11 +65,11 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="container">
-        <ErrorMessage v-if="errorMessage" :message="errorMessage" />
-        
-        <ResponsiveTable :table="data" />
-    </div>
+  <div class="container">
+    <ErrorMessage v-if="errorMessage" :message="errorMessage" />
+
+    <ResponsiveTable :table="data" />
+  </div>
 </template>
 
 <style scoped>

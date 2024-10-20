@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import IndexUser from './components/indexUser.vue';
+import { ref } from "vue";
+import IndexUser from "./components/indexUser.vue";
 
 interface Option {
-  label: 'INDEX' | 'GET' | 'POST' | 'PATCH' | 'DELETE';
-  value: 'index' | 'get' | 'post' | 'patch' | 'delete';
+  label: "INDEX" | "GET" | "POST" | "PATCH" | "DELETE";
+  value: "index" | "get" | "post" | "patch" | "delete";
 }
 
 const options: Option[] = [
-  { label: 'INDEX', value: 'index' },
-  { label: 'GET', value: 'get' },
-  { label: 'POST', value: 'post' },
-  { label: 'PATCH', value: 'patch' },
-  { label: 'DELETE', value: 'delete' },
+  { label: "INDEX", value: "index" },
+  { label: "GET", value: "get" },
+  { label: "POST", value: "post" },
+  { label: "PATCH", value: "patch" },
+  { label: "DELETE", value: "delete" },
 ];
 
-const selectedOption = ref<string>('');
+const selectedOption = ref<string>("");
 
 const getComponent = (option: string) => {
   switch (option) {
-    case 'index':
-    case 'get':
-    case 'post':
-    case 'patch':
-    case 'delete':
+    case "index":
+    case "get":
+    case "post":
+    case "patch":
+    case "delete":
       return IndexUser;
     default:
       return null;
@@ -34,11 +34,12 @@ const getComponent = (option: string) => {
 <template>
   <div class="container">
     <nav class="menu">
-      <button 
-        v-for="option in options" 
-        :key="option.value" 
+      <button
+        v-for="option in options"
+        :key="option.value"
         @click="selectedOption = option.value"
-        :class="{ active: selectedOption === option.value }">
+        :class="{ active: selectedOption === option.value }"
+      >
         {{ option.label }}
       </button>
     </nav>
