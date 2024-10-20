@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 import { User } from '../generated/user';
 import { UserServiceClient } from '../generated/user.client';
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
-import Error from './error.vue';
+import ErrorMessage from './error_message.vue';
 import ResponsiveTable from './common/responsive_table.vue';
 import { ResponsiveTableType } from '../types/responsive_table.type';
 
@@ -65,7 +65,7 @@ onMounted(() => {
 
 <template>
     <div class="container">
-        <Error v-if="errorMessage" :message="errorMessage" />
+        <ErrorMessage v-if="errorMessage" :message="errorMessage" />
         
         <ResponsiveTable :table="data" />
     </div>
