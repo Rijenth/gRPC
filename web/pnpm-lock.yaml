@@ -8,10 +8,22 @@ importers:
 
   .:
     dependencies:
+      '@protobuf-ts/grpcweb-transport':
+        specifier: ^2.9.4
+        version: 2.9.4
+      '@protobuf-ts/runtime':
+        specifier: ^2.9.4
+        version: 2.9.4
+      '@protobuf-ts/runtime-rpc':
+        specifier: ^2.9.4
+        version: 2.9.4
       vue:
         specifier: ^3.4.37
         version: 3.5.8(typescript@5.6.2)
     devDependencies:
+      '@protobuf-ts/plugin':
+        specifier: ^2.9.4
+        version: 2.9.4
       '@vitejs/plugin-vue':
         specifier: ^5.1.2
         version: 5.1.4(vite@5.4.7)(vue@3.5.8(typescript@5.6.2))
@@ -184,6 +196,26 @@ packages:
 
   '@jridgewell/sourcemap-codec@1.5.0':
     resolution: {integrity: sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==}
+
+  '@protobuf-ts/grpcweb-transport@2.9.4':
+    resolution: {integrity: sha512-6aQgwPTgX6FkqWqmNts3uk8T/C5coJoH7U87zgaZY/Wo2EVa9SId5bXTM8uo4WR+CN8j9W4c9ij1yG13Hc3xUw==}
+
+  '@protobuf-ts/plugin-framework@2.9.4':
+    resolution: {integrity: sha512-9nuX1kjdMliv+Pes8dQCKyVhjKgNNfwxVHg+tx3fLXSfZZRcUHMc1PMwB9/vTvc6gBKt9QGz5ERqSqZc0++E9A==}
+
+  '@protobuf-ts/plugin@2.9.4':
+    resolution: {integrity: sha512-Db5Laq5T3mc6ERZvhIhkj1rn57/p8gbWiCKxQWbZBBl20wMuqKoHbRw4tuD7FyXi+IkwTToaNVXymv5CY3E8Rw==}
+    hasBin: true
+
+  '@protobuf-ts/protoc@2.9.4':
+    resolution: {integrity: sha512-hQX+nOhFtrA+YdAXsXEDrLoGJqXHpgv4+BueYF0S9hy/Jq0VRTVlJS1Etmf4qlMt/WdigEes5LOd/LDzui4GIQ==}
+    hasBin: true
+
+  '@protobuf-ts/runtime-rpc@2.9.4':
+    resolution: {integrity: sha512-y9L9JgnZxXFqH5vD4d7j9duWvIJ7AShyBRoNKJGhu9Q27qIbchfzli66H9RvrQNIFk5ER7z1Twe059WZGqERcA==}
+
+  '@protobuf-ts/runtime@2.9.4':
+    resolution: {integrity: sha512-vHRFWtJJB/SiogWDF0ypoKfRIZ41Kq+G9cEFj6Qm1eQaAhJ1LDFvgZ7Ja4tb3iLOQhz0PaoPnnOijF1qmEqTxg==}
 
   '@rollup/rollup-android-arm-eabi@4.22.4':
     resolution: {integrity: sha512-Fxamp4aEZnfPOcGA8KSNEohV8hX7zVHOemC8jVBoBUHu5zpJK/Eu3uJwt6BMgy9fkvzxDaurgj96F/NiLukF2w==}
@@ -403,6 +435,11 @@ packages:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
     engines: {node: '>=4'}
 
+  typescript@3.9.10:
+    resolution: {integrity: sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+
   typescript@5.6.2:
     resolution: {integrity: sha512-NW8ByodCSNCwZeghjN3o+JX5OFH0Ojg6sadjEKY4huZ52TqbJTJnDo5+Tw98lSy63NZvi4n+ez5m2u5d4PkZyw==}
     engines: {node: '>=14.17'}
@@ -542,6 +579,32 @@ snapshots:
     optional: true
 
   '@jridgewell/sourcemap-codec@1.5.0': {}
+
+  '@protobuf-ts/grpcweb-transport@2.9.4':
+    dependencies:
+      '@protobuf-ts/runtime': 2.9.4
+      '@protobuf-ts/runtime-rpc': 2.9.4
+
+  '@protobuf-ts/plugin-framework@2.9.4':
+    dependencies:
+      '@protobuf-ts/runtime': 2.9.4
+      typescript: 3.9.10
+
+  '@protobuf-ts/plugin@2.9.4':
+    dependencies:
+      '@protobuf-ts/plugin-framework': 2.9.4
+      '@protobuf-ts/protoc': 2.9.4
+      '@protobuf-ts/runtime': 2.9.4
+      '@protobuf-ts/runtime-rpc': 2.9.4
+      typescript: 3.9.10
+
+  '@protobuf-ts/protoc@2.9.4': {}
+
+  '@protobuf-ts/runtime-rpc@2.9.4':
+    dependencies:
+      '@protobuf-ts/runtime': 2.9.4
+
+  '@protobuf-ts/runtime@2.9.4': {}
 
   '@rollup/rollup-android-arm-eabi@4.22.4':
     optional: true
@@ -778,6 +841,8 @@ snapshots:
   source-map-js@1.2.1: {}
 
   to-fast-properties@2.0.0: {}
+
+  typescript@3.9.10: {}
 
   typescript@5.6.2: {}
 
