@@ -11,6 +11,8 @@ services:
     ports:
       - 5173:5173
     restart: always
+    networks:
+      - envoy-network
 
   go:
     container_name: go
@@ -18,15 +20,32 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      Port: 8000
+      Port: 12345
     ports:
-      - "8000:8000"
+      - "12345:12345"
     volumes:
       - ./:/app
     restart: always
     depends_on:
       mysql:
         condition: service_healthy
+    networks:
+      - envoy-network
+
+  envoy:
+    container_name: envoy
+    build:
+      context: ./envoy
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+      - "9901:9901"
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy.yaml
+    depends_on:
+      - go
+    networks:
+      - envoy-network
 
   mysql:
     container_name: mysql
@@ -44,6 +63,8 @@ services:
     restart: always
     volumes:
       - ./database:/docker-entrypoint-initdb.d/:ro
+    networks:
+      - envoy-network
     
   adminer:
     container_name: adminer
@@ -53,4 +74,8 @@ services:
     ports:
       - 8080:8080
     restart: always
+
+networks:
+  envoy-network:
+    driver: bridge
  

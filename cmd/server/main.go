@@ -5,14 +5,15 @@ import (
 	"log"
 	"net"
 
+	"github.com/rijenth/gRPC/internal/config"
 	pb "github.com/rijenth/gRPC/internal/grpc/user"
 	infrastructure "github.com/rijenth/gRPC/internal/infrastructure/database"
 	"github.com/rijenth/gRPC/internal/infrastructure/repository"
 	"github.com/rijenth/gRPC/internal/interfaces/controller"
 	"github.com/rijenth/gRPC/internal/usecase"
-	"google.golang.org/grpc/reflection"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 // my-go-project/
@@ -52,7 +53,14 @@ func main() {
 
 	userController := setupUserController(db)
 
-	lis, err := net.Listen("tcp", ":8000")
+	grpcServerPortConfig, err := config.LoadGrpcServerPortConfig()
+
+	if err != nil {
+		log.Fatalf("failed to load gRPC server port config: %v", err)
+	}
+
+	lis, err := net.Listen("tcp", ":"+grpcServerPortConfig.GrpcServerPort)
+
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

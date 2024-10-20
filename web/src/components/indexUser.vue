@@ -1,79 +1,75 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import User from '../models/user';
+import { onMounted, ref } from "vue";
+import { User } from "../generated/user";
+import { UserServiceClient } from "../generated/user.client";
+import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
+import ErrorMessage from "./error_message.vue";
+import ResponsiveTable from "./common/responsive_table.vue";
+import { ResponsiveTableType } from "../types/responsive_table.type";
 
-const users = ref<User[]>([
-  new User({
-    id: 1,
-    username: 'johnDoe',
-    email: 'john@example.com',
-    firstName: 'John',
-    lastName: 'Doe',
-    dateOfBirth: new Date('1990-01-01'),
-    address: '123 Street, City',
-    phoneNumber: '1234567890',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    isActive: true,
-    profilePicture: '',
-    bio: 'Software developer with 10 years of experience',
-  }),
-  new User({
-    id: 2,
-    username: 'janeDoe',
-    email: 'jane@example.com',
-    firstName: 'Jane',
-    lastName: 'Doe',
-    dateOfBirth: new Date('1992-05-15'),
-    address: '456 Avenue, City',
-    phoneNumber: '9876543210',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    isActive: true,
-    profilePicture: '',
-    bio: 'Graphic designer with a love for creative work',
-  }),
-  new User({
-    id: 3,
-    username: 'jackSmith',
-    email: 'jack@example.com',
-    firstName: 'Jack',
-    lastName: 'Smith',
-    dateOfBirth: new Date('1988-09-22'),
-    address: '789 Boulevard, City',
-    phoneNumber: '1122334455',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    isActive: true,
-    profilePicture: '',
-    bio: 'Project manager with a knack for agile methodologies',
-  }),
-]);
+const data = ref<ResponsiveTableType>({
+  bold: true,
+  matrix: [
+    [
+      { value: "Nom d'utilisateur" },
+      { value: "Adresse mail" },
+      { value: "Prénom" },
+      { value: "Nom" },
+      { value: "Biographie" },
+    ],
+  ],
+});
+const errorMessage = ref<string | null>(null);
+
+const transport = new GrpcWebFetchTransport({
+  baseUrl: "http://localhost:8000",
+});
+const userService = new UserServiceClient(transport);
+
+const fetchAllUsers = async () => {
+  try {
+    errorMessage.value = null;
+
+    const request = await userService.index({});
+
+    if (request.response && request.response.users) {
+      request.response.users.forEach((user: User) => {
+        data.value.matrix.push([
+          { value: user.username },
+          { value: user.email },
+          { value: user.firstName },
+          { value: user.lastName },
+          { value: user.bio },
+        ]);
+      });
+
+      return;
+    }
+
+    errorMessage.value = "Aucun utilisateur trouvé";
+  } catch (error) {
+    if (error instanceof Error) {
+      errorMessage.value = error.message;
+      return;
+    }
+
+    console.error(error);
+    errorMessage.value =
+      "Une erreur inconnue s'est produite, (voir la console pour plus de détails)";
+  }
+};
+
+onMounted(() => {
+  fetchAllUsers();
+});
 </script>
 
 <template>
-    <div class="container">
-        <table class="user-table">
-        <thead>
-            <tr>
-            <th>Nom d'utilisateur</th>
-            <th>Adresse mail</th>
-            <th>Prénom</th>
-            <th>Nom</th>
-            <th>Biographie</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="user in users" :key="user.id">
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.firstName }}</td>
-            <td>{{ user.lastName }}</td>
-            <td>{{ user.bio }}</td>
-            </tr>
-        </tbody>
-        </table>
-    </div>
+  <div class="container">
+    <ErrorMessage v-if="errorMessage" :message="errorMessage" />
+
+    <ResponsiveTable :table="data" />
+  </div>
 </template>
 
 <style scoped>
