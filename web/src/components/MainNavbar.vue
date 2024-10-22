@@ -1,39 +1,18 @@
-<script setup lang="ts">
-import { ref } from "vue";
-
-interface Option {
-  label: "INDEX" | "GET" | "POST" | "PATCH" | "DELETE";
-  value: "index" | "get" | "post" | "patch" | "delete";
-}
-
-const options: Option[] = [
-  { label: "INDEX", value: "index" },
-  { label: "GET", value: "get" },
-  { label: "POST", value: "post" },
-  { label: "PATCH", value: "patch" },
-  { label: "DELETE", value: "delete" },
-];
-
-const selectedOption = ref<string>("");
-
-const emit = defineEmits(["update:selectedOption"]);
-
-const selectOption = (options: string) => {
-  selectedOption.value = options;
-  emit("update:selectedOption", selectedOption.value);
-};
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <nav class="menu">
-    <button
-      v-for="option in options"
-      :key="option.value"
-      @click="selectOption(option.value)"
-      :class="{ active: selectedOption === option.value }"
+    <router-link to="/" class="button" :class="{ active: $route.path === '/' }">
+      Accueil
+    </router-link>
+
+    <router-link
+      to="/users-list"
+      class="button"
+      :class="{ active: $route.path === '/users-list' }"
     >
-      {{ option.label }}
-    </button>
+      Mes utilisateurs
+    </router-link>
   </nav>
 </template>
 
@@ -48,7 +27,7 @@ const selectOption = (options: string) => {
   gap: 15px;
 }
 
-button {
+.button {
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -57,14 +36,15 @@ button {
   cursor: pointer;
   padding: 8px 16px;
   transition: all 0.3s ease;
+  text-decoration: none;
 }
 
-button:hover {
+.button:hover {
   background-color: #f0f0f0;
   border-color: #ccc;
 }
 
-button.active {
+.button.active {
   background-color: #7289da;
   color: #fff;
   border-color: #5865f2;
@@ -78,7 +58,7 @@ button.active {
     align-items: center;
   }
 
-  button {
+  .button {
     flex: 1 1 45%;
     margin: 5px;
     text-align: center;
