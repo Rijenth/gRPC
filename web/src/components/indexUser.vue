@@ -4,7 +4,7 @@ import { User } from "../generated/user";
 import { UserServiceClient } from "../generated/user.client";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import ErrorMessage from "./error_message.vue";
-import ResponsiveTable from "./common/responsive_table.vue";
+import ResponsiveTable from "./responsive_table.vue";
 import { ResponsiveTableType } from "../types/responsive_table.type";
 
 const data = ref<ResponsiveTableType>({
