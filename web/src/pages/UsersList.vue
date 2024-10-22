@@ -3,9 +3,9 @@ import { onMounted, ref } from "vue";
 import { User } from "../generated/user";
 import { UserServiceClient } from "../generated/user.client";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
-import ErrorMessage from "./error_message.vue";
-import ResponsiveTable from "./common/responsive_table.vue";
 import { ResponsiveTableType } from "../types/responsive_table.type";
+import ErrorMessage from "../components/ErrorMessage.vue";
+import ResponsiveTable from "../components/ResponsiveTable.vue";
 
 const data = ref<ResponsiveTableType>({
   bold: true,
