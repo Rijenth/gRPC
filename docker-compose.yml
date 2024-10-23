@@ -1,7 +1,7 @@
 services:
   vue:
     container_name: vue
-    image: node:22.9.0
+    image: node:23.0.0
     build:
       context: ./web
       dockerfile: Dockerfile

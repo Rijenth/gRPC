@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ResponsiveTableType } from "../types/responsive_table.type";
-
 // crédits to Nathan Shumate: https://codepen.io/nzshumate/pen/YRZPqW
+import { ResponsiveTableType } from "../types/responsive_table.type";
 
 const props = defineProps<{
   table: ResponsiveTableType;
