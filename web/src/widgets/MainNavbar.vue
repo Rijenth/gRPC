@@ -1,5 +1,3 @@
-<script setup lang="ts"></script>
-
 <template>
   <nav class="menu">
     <router-link to="/" class="button" :class="{ active: $route.path === '/' }">
