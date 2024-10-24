@@ -6,20 +6,24 @@ import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { ResponsiveTableType } from "../types/responsive_table.type";
 import ErrorMessage from "../components/ErrorMessage.vue";
 import ResponsiveTable from "../components/ResponsiveTable.vue";
+import BasicModal from "../components/BasicModal.vue";
 
 const data = ref<ResponsiveTableType>({
   bold: true,
   matrix: [
     [
-      { value: "Nom d'utilisateur" },
-      { value: "Adresse mail" },
-      { value: "Prénom" },
-      { value: "Nom" },
-      { value: "Biographie" },
+      { label: "username", value: "Nom d'utilisateur" },
+      { label: "email_address", value: "Adresse mail" },
+      { label: "first_name", value: "Prénom" },
+      { label: "last_name", value: "Nom" },
+      { label: "bio", value: "Biographie" },
     ],
   ],
 });
 const errorMessage = ref<string | null>(null);
+const users = ref<User[]>([]);
+const showModal = ref(false);
+const selectedUser = ref<User | null>(null);
 
 const transport = new GrpcWebFetchTransport({
   baseUrl: "http://localhost:8000",
@@ -34,12 +38,16 @@ const fetchAllUsers = async () => {
 
     if (request.response && request.response.users) {
       request.response.users.forEach((user: User) => {
+        users.value.push(user);
+      });
+
+      users.value.forEach((user: User) => {
         data.value.matrix.push([
-          { value: user.username },
-          { value: user.email },
-          { value: user.firstName },
-          { value: user.lastName },
-          { value: user.bio },
+          { label: "username", value: user.username },
+          { label: "email_address", value: user.email },
+          { label: "first_name", value: user.firstName },
+          { label: "last_name", value: user.lastName },
+          { label: "bio", value: user.bio },
         ]);
       });
 
@@ -59,6 +67,24 @@ const fetchAllUsers = async () => {
   }
 };
 
+const handleResponsiveTableRowClick = (row: Record<string, string>) => {
+  if (!row.username || !row.email_address) {
+    return;
+  }
+
+  const user = users.value.find(
+    (user) =>
+      user.username === row.username && user.email === row.email_address,
+  );
+
+  if (!user) {
+    return;
+  }
+
+  selectedUser.value = user;
+  showModal.value = true;
+};
+
 onMounted(() => {
   fetchAllUsers();
 });
@@ -68,7 +94,16 @@ onMounted(() => {
   <div class="container">
     <ErrorMessage v-if="errorMessage" :message="errorMessage" />
 
-    <ResponsiveTable :table="data" />
+    <ResponsiveTable
+      :table="data"
+      @responsive-table:row-click="handleResponsiveTableRowClick"
+    />
+
+    <BasicModal :show="showModal" @basic-modal:close="showModal = false">
+      <h3>Informations Utilisateur</h3>
+      <p><strong>Nom d'utilisateur : </strong>{{ selectedUser?.username }}</p>
+      <p><strong>Email : </strong>{{ selectedUser?.email }}</p>
+    </BasicModal>
   </div>
 </template>
 

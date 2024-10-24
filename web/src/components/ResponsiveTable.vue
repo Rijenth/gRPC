@@ -1,10 +1,28 @@
 <script setup lang="ts">
 // crédits to Nathan Shumate: https://codepen.io/nzshumate/pen/YRZPqW
-import { ResponsiveTableType } from "../types/responsive_table.type";
+import {
+  ResponsiveTableMatrix,
+  ResponsiveTableType,
+} from "../types/responsive_table.type";
 
 const props = defineProps<{
   table: ResponsiveTableType;
 }>();
+
+const emit = defineEmits(["responsive-table:row-click"]);
+
+const handleRowClick = (row: ResponsiveTableMatrix[]) => {
+  let rowValues = row.reduce(
+    (result, cell) => {
+      result[cell.label] = cell.value;
+
+      return result;
+    },
+    {} as Record<string, string>,
+  );
+
+  emit("responsive-table:row-click", rowValues);
+};
 </script>
 
 <template>
@@ -14,6 +32,7 @@ const props = defineProps<{
         v-for="(row, x) in props.table.matrix"
         :key="x"
         :class="{ bold: props.table.bold && x === 0 }"
+        @click="handleRowClick(row)"
       >
         <td
           v-for="(col, y) in row"
@@ -42,6 +61,17 @@ $breakpoint: 600px;
     border: 1px solid #000;
 
     tr {
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+
+      &:active {
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
       td {
         border: 1px solid #000;
         padding: 10px;
