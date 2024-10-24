@@ -27,8 +27,10 @@ const closeModal = () => {
 <template>
   <div v-if="visible" class="modal-overlay" @click="closeModal">
     <div class="modal-content" @click.stop>
-      <slot />
-      <button @click="closeModal">Fermer</button>
+      <div class="modal-children">
+        <slot />
+        <button @click="closeModal">Fermer</button>
+      </div>
     </div>
   </div>
 </template>
@@ -55,6 +57,10 @@ const closeModal = () => {
   max-width: 500px;
   width: 100%;
   animation: modal-appear 0.3s ease-out;
+}
+
+.modal-children {
+  padding: 20px;
 }
 
 @keyframes modal-appear {
