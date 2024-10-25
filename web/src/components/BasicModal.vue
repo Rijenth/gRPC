@@ -29,7 +29,6 @@ const closeModal = () => {
     <div class="modal-content" @click.stop>
       <div class="modal-children">
         <slot />
-        <button @click="closeModal">Fermer</button>
       </div>
     </div>
   </div>

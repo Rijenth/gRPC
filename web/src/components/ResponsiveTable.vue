@@ -55,47 +55,54 @@ $breakpoint: 600px;
   table {
     min-width: 300px;
     width: 100%;
-    height: fit-content;
-    overflow-y: scroll;
     border-collapse: collapse;
-    border: 1px solid #000;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 
     tr {
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition:
+        background-color 0.3s ease,
+        transform 0.1s ease;
 
       &:hover {
-        background-color: rgba(0, 0, 0, 0.2);
+        background-color: rgba(0, 0, 0, 0.05);
       }
 
       &:active {
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: rgba(0, 0, 0, 0.1);
+        transform: scale(0.98);
       }
 
       td {
-        border: 1px solid #000;
-        padding: 10px;
+        padding: 12px 15px;
+        border: 1px solid #eee;
+        text-align: left;
+        font-size: 16px;
       }
     }
 
     .bold {
-      border-right: none;
-      border-left: none;
-      background: #ddd;
-      border-bottom: 1px solid #c2c2c2;
+      background: #f8f8f8;
+      font-weight: bold;
+
       td {
-        background: #fff;
-        color: #000;
+        color: #333;
         font-size: 18px;
-        font-weight: bold;
       }
     }
   }
 
   .with-header {
     tr:first-of-type {
+      color: #fff;
+      font-weight: bold;
+      text-transform: uppercase;
+
       td {
-        border: none;
+        padding: 15px;
+        border: 1px solid #7289da;
+        color: #7289da;
       }
     }
 
@@ -105,26 +112,25 @@ $breakpoint: 600px;
       }
 
       tr {
-        border: 1px solid #000;
+        display: block;
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
 
         td {
           display: block;
-          border: none;
+          width: 100%;
+          box-sizing: border-box;
           text-align: left;
-
-          &:first-child {
-            padding-top: 0.5em;
-          }
-
-          &:last-child {
-            padding-bottom: 0.5em;
-          }
+          padding: 8px;
+          border: none;
+          position: relative;
 
           &:before {
             content: attr(data-th) ": ";
             font-weight: bold;
-            display: block;
-            text-align: left;
+            display: inline-block;
+            color: #666;
+            margin-right: 5px;
           }
         }
       }

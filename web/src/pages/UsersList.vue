@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { User } from "../generated/user";
-import { UserServiceClient } from "../generated/user.client";
-import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { ResponsiveTableType } from "../types/responsive_table.type";
 import ErrorMessage from "../components/ErrorMessage.vue";
 import ResponsiveTable from "../components/ResponsiveTable.vue";
 import BasicModal from "../components/BasicModal.vue";
 import { ConvertTimestampToHumanReadable } from "../utils/ConvertTimestampToHumanReadable";
 import { ConvertPhoneNumberToHumanReadable } from "../utils/ConvertPhoneNumberToHumanReadable";
+import EmitButton from "../components/EmitButton.vue";
+import UserApi from "../api/user.api";
 
+const userApi = new UserApi();
 const data = ref<ResponsiveTableType>({
   bold: true,
   matrix: [
@@ -27,46 +28,30 @@ const users = ref<User[]>([]);
 const showModal = ref(false);
 const selectedUser = ref<User | null>(null);
 
-const transport = new GrpcWebFetchTransport({
-  baseUrl: "http://localhost:8000",
-});
-const userService = new UserServiceClient(transport);
-
 const fetchAllUsers = async () => {
-  try {
-    errorMessage.value = null;
+  errorMessage.value = null;
 
-    const request = await userService.index({});
+  const response = await userApi.index();
 
-    if (request.response && request.response.users) {
-      request.response.users.forEach((user: User) => {
-        users.value.push(user);
-      });
+  if (response?.users) {
+    response?.users.forEach((user: User) => {
+      users.value.push(user);
+    });
 
-      users.value.forEach((user: User) => {
-        data.value.matrix.push([
-          { label: "username", value: user.username },
-          { label: "email_address", value: user.email },
-          { label: "first_name", value: user.firstName },
-          { label: "last_name", value: user.lastName },
-          { label: "bio", value: user.bio },
-        ]);
-      });
+    users.value.forEach((user: User) => {
+      data.value.matrix.push([
+        { label: "username", value: user.username },
+        { label: "email_address", value: user.email },
+        { label: "first_name", value: user.firstName },
+        { label: "last_name", value: user.lastName },
+        { label: "bio", value: user.bio },
+      ]);
+    });
 
-      return;
-    }
-
-    errorMessage.value = "Aucun utilisateur trouvé";
-  } catch (error) {
-    if (error instanceof Error) {
-      errorMessage.value = error.message;
-      return;
-    }
-
-    console.error(error);
-    errorMessage.value =
-      "Une erreur inconnue s'est produite, (voir la console pour plus de détails)";
+    return;
   }
+
+  errorMessage.value = "Impossible de récupérer la liste des utilisateurs";
 };
 
 const handleResponsiveTableRowClick = (row: Record<string, string>) => {
@@ -85,6 +70,34 @@ const handleResponsiveTableRowClick = (row: Record<string, string>) => {
 
   selectedUser.value = user;
   showModal.value = true;
+};
+
+const handleDeleteUserFromList = async () => {
+  errorMessage.value = null;
+
+  if (!selectedUser.value) {
+    return;
+  }
+
+  const response = await userApi.delete(selectedUser.value.id);
+
+  if (response?.success) {
+    users.value = users.value.filter(
+      (user) => user.id !== selectedUser.value?.id,
+    );
+
+    data.value.matrix = data.value.matrix.filter(
+      (row) => row[0].value !== selectedUser.value?.username,
+    );
+
+    selectedUser.value = null;
+    showModal.value = false;
+
+    return;
+  }
+
+  errorMessage.value =
+    "Une erreur est survenue lors de la suppression de l'utilisateur";
 };
 
 onMounted(() => {
@@ -121,12 +134,35 @@ onMounted(() => {
           >{{ ConvertTimestampToHumanReadable(selectedUser?.dateOfBirth) }}
         </p>
         <p><strong>Biographie : </strong>{{ selectedUser?.bio }}</p>
+
+        <div class="modal-actions">
+          <EmitButton
+            text="Fermer"
+            :onButtonClick="
+              () => {
+                showModal = false;
+              }
+            "
+          />
+
+          <EmitButton
+            text="Retirer de votre liste"
+            :onButtonClick="handleDeleteUserFromList"
+            backgroundColor="#d93939"
+            hoverColor="#b72f2f"
+          />
+        </div>
       </div>
     </BasicModal>
   </div>
 </template>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+}
 .title {
   text-align: center;
   border: 1px solid #333;
@@ -138,10 +174,10 @@ onMounted(() => {
   margin: 40px 0;
 }
 
-.container {
+.modal-actions {
   display: flex;
-  flex-direction: column;
-  padding-top: 20px;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 
 .user-table {
