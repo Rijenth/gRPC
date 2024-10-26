@@ -87,4 +87,16 @@ func (c *UserController) Get(ctx context.Context, request *pb.GetUserByIdRequest
 	}, nil
 }
 
-// TODO: Post, Patch, Delete.
+func (c *UserController) Delete(ctx context.Context, request *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+	if err := c.usecase.DeleteUser(ctx, int(request.Id)); err != nil {
+		return &pb.DeleteUserResponse{
+			Success: false,
+		}, err
+	}
+
+	return &pb.DeleteUserResponse{
+		Success: true,
+	}, nil
+}
+
+// TODO: Post, Patch.

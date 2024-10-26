@@ -79,7 +79,13 @@ func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, user *domain.User) 
 }
 
 func (r *UserRepositoryImpl) DeleteUser(ctx context.Context, id int) error {
-	log.Println("TODO: DeleteUser")
+	query := `DELETE FROM users WHERE id = ?`
+
+	_, err := r.db.ExecContext(ctx, query, id)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
