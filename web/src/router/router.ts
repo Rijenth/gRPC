@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuth } from "../state/useAuth";
 
 export const routes = [
   {
@@ -16,7 +17,7 @@ export const routes = [
     component: () => import("../pages/UsersList.vue"),
     meta: {
       addToNavbar: true,
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
   {
@@ -42,6 +43,23 @@ export const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to, _, next) => {
+  const auth = useAuth();
+  const requiresAuth = to.meta.requiresAuth;
+
+  if (!requiresAuth) {
+    next();
+    return;
+  }
+
+  if (!auth.state.authenticated) {
+    next({ name: "Accueil" });
+    return;
+  }
+
+  next();
 });
 
 export default router;

@@ -1,6 +1,6 @@
 // src/pages/LogoutPage.vue
 <script setup lang="ts">
-import { useAuth } from "../composables/useAuth";
+import { useAuth } from "../state/useAuth";
 import { useRouter } from "vue-router";
 import { onMounted } from "vue";
 

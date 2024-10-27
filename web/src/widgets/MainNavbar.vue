@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { routes } from "../router/router";
-import { useAuth } from "../composables/useAuth";
+import { useAuth } from "../state/useAuth";
 
 const auth = useAuth();
 
