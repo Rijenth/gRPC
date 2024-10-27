@@ -1,13 +1,24 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { routes } from "../router/router";
+import { useAuth } from "../composables/useAuth";
+
+const auth = useAuth();
+
+const navbarRoutes = computed(() =>
+  routes
+    .filter((route) => route.meta.addToNavbar)
+    .filter(
+      (route) =>
+        route.meta.requiresAuth === false ||
+        route.meta.requiresAuth === auth.state.authenticated,
+    ),
+);
 </script>
 
 <template>
   <nav class="menu">
-    <div
-      v-for="route in routes.filter((route) => route.addToNavbar)"
-      :key="route.path"
-    >
+    <div v-for="route in navbarRoutes" :key="route.path">
       <router-link
         :to="route.path"
         class="button"
