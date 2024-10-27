@@ -1,19 +1,22 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-const routes = [
+export const routes = [
   {
     path: "/",
-    name: "Homepage",
+    name: "Accueil",
+    addToNavbar: true,
     component: () => import("../pages/HomePage.vue"),
   },
   {
     path: "/users-list",
-    name: "UsersList",
+    name: "Mes utilisateurs",
+    addToNavbar: true,
     component: () => import("../pages/UsersList.vue"),
   },
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
+    addToNavbar: false,
     component: () => import("../pages/NotFound.vue"),
   },
 ];

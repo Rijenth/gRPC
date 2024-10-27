@@ -1,16 +1,21 @@
+<script setup lang="ts">
+import { routes } from "../router/router";
+</script>
+
 <template>
   <nav class="menu">
-    <router-link to="/" class="button" :class="{ active: $route.path === '/' }">
-      Accueil
-    </router-link>
-
-    <router-link
-      to="/users-list"
-      class="button"
-      :class="{ active: $route.path === '/users-list' }"
+    <div
+      v-for="route in routes.filter((route) => route.addToNavbar)"
+      :key="route.path"
     >
-      Mes utilisateurs
-    </router-link>
+      <router-link
+        :to="route.path"
+        class="button"
+        :class="{ active: $route.path === route.path }"
+      >
+        {{ route.name }}
+      </router-link>
+    </div>
   </nav>
 </template>
 

@@ -5,8 +5,8 @@ import { ResponsiveTableType } from "../types/responsive_table.type";
 import ErrorMessage from "../components/ErrorMessage.vue";
 import ResponsiveTable from "../components/ResponsiveTable.vue";
 import BasicModal from "../components/BasicModal.vue";
-import { ConvertTimestampToHumanReadable } from "../utils/ConvertTimestampToHumanReadable";
-import { ConvertPhoneNumberToHumanReadable } from "../utils/ConvertPhoneNumberToHumanReadable";
+import { ConvertTimestampToHumanReadable } from "../composables/ConvertTimestampToHumanReadable";
+import { ConvertPhoneNumberToHumanReadable } from "../composables/ConvertPhoneNumberToHumanReadable";
 import EmitButton from "../components/EmitButton.vue";
 import UserApi from "../api/user.api";
 
