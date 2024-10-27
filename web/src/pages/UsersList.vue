@@ -33,6 +33,11 @@ const fetchAllUsers = async () => {
 
   const response = await userApi.index();
 
+  if (typeof response === "string") {
+    errorMessage.value = response;
+    return;
+  }
+
   if (response?.users) {
     response?.users.forEach((user: User) => {
       users.value.push(user);
@@ -80,6 +85,11 @@ const handleDeleteUserFromList = async () => {
   }
 
   const response = await userApi.delete(selectedUser.value.id);
+
+  if (typeof response === "string") {
+    errorMessage.value = response;
+    return;
+  }
 
   if (response?.success) {
     users.value = users.value.filter(

@@ -1,4 +1,5 @@
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
+import { RpcError } from "@protobuf-ts/runtime-rpc";
 
 export default class Api {
   private readonly transport: GrpcWebFetchTransport;
@@ -14,12 +15,13 @@ export default class Api {
     return this.transport;
   }
 
-  public handleRequestError(error: unknown, message: string): void {
-    if (error instanceof Error) {
-      console.error(message, error.message);
-      return;
+  public getMessageFromRequestError(error: unknown, message: string): string {
+    if (error instanceof RpcError) {
+      return "[" + error.code + "] " + error.message;
     }
 
-    console.error(message, error);
+    console.error(error);
+
+    return message;
   }
 }
