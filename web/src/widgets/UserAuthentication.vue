@@ -4,11 +4,13 @@ import EmitButton from "../components/EmitButton.vue";
 import ErrorMessage from "../components/ErrorMessage.vue";
 import { useAuth } from "../state/useAuth";
 import LabelledInput from "../components/LabelledInput.vue";
+import AuthApi from "../api/auth.api";
 
 const auth = useAuth();
-const username = ref("");
-const password = ref("");
-const errorMessage = ref("");
+const authApi = new AuthApi();
+const username = ref<string>("");
+const password = ref<string>("");
+const errorMessage = ref<string>("");
 
 const handleLogin = async () => {
   errorMessage.value = "";
@@ -18,13 +20,15 @@ const handleLogin = async () => {
     return;
   }
 
-  setTimeout(() => {
-    if (username.value !== "admin") {
-      errorMessage.value = "Nom d'utilisateur ou mot de passe incorrect";
-      return;
-    }
-    auth.login(username.value);
-  }, 1000);
+  const response = await authApi.login(username.value, password.value);
+
+  if (typeof response !== "string") {
+    auth.login(response.token);
+
+    return;
+  }
+
+  errorMessage.value = response;
 };
 </script>
 

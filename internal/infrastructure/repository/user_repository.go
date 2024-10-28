@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 
 	"github.com/rijenth/gRPC/internal/domain"
@@ -60,6 +61,26 @@ func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, id int) (*domain.U
 		&user.Bio, &user.IsActive, &user.IsAdmin, &user.CreatedAt, &user.UpdatedAt, &lastLogin,
 	)
 	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (r *UserRepositoryImpl) GetUserByUsername(ctx context.Context, username string) (*domain.User, error) {
+	query := `SELECT id, username, password FROM users WHERE username = ?`
+
+	row := r.db.QueryRowContext(ctx, query, username)
+
+	var user domain.User
+
+	err := row.Scan(&user.ID, &user.Username, &user.Password)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("authentification failed")
+		}
+
 		return nil, err
 	}
 

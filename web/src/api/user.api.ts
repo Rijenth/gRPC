@@ -22,7 +22,7 @@ export default class UserApi extends Api {
     } catch (error) {
       return this.getMessageFromRequestError(
         error,
-        "[user.api.ts] Erreur lors de la récupération des utilisateurs:",
+        "[user.api.ts] Erreur lors de la récupération des utilisateurs",
       );
     }
   }
@@ -35,7 +35,7 @@ export default class UserApi extends Api {
     } catch (error) {
       return this.getMessageFromRequestError(
         error,
-        "[user.api.ts] Erreur lors de la suppression de l'utilisateur:",
+        "[user.api.ts] Erreur lors de la suppression de l'utilisateur",
       );
     }
   }

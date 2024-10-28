@@ -6,8 +6,10 @@ import (
 	"net"
 
 	"github.com/rijenth/gRPC/internal/config"
-	pb "github.com/rijenth/gRPC/internal/grpc/user"
+	pbauth "github.com/rijenth/gRPC/internal/grpc/auth"
+	pbuser "github.com/rijenth/gRPC/internal/grpc/user"
 	infrastructure "github.com/rijenth/gRPC/internal/infrastructure/database"
+	"github.com/rijenth/gRPC/internal/infrastructure/interceptors"
 	"github.com/rijenth/gRPC/internal/infrastructure/repository"
 	"github.com/rijenth/gRPC/internal/interfaces/controller"
 	"github.com/rijenth/gRPC/internal/usecase"
@@ -37,13 +39,6 @@ import (
 // ├── web/                     # Client Web (React, Angular, Vue.js)
 // └── go.mod                   # Déclaration des modules et dépendances
 
-func setupUserController(db *sql.DB) *controller.UserController {
-	userRepo := repository.NewUserRepository(db)
-	userUsecase := usecase.NewUserUsecase(userRepo)
-
-	return controller.NewUserController(userUsecase)
-}
-
 func main() {
 	db, err := infrastructure.InitDB()
 	if err != nil {
@@ -51,6 +46,7 @@ func main() {
 	}
 	defer db.Close()
 
+	authController := setupAuthController(db)
 	userController := setupUserController(db)
 
 	grpcServerPortConfig, err := config.LoadGrpcServerPortConfig()
@@ -65,8 +61,11 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
-	pb.RegisterUserServiceServer(grpcServer, userController)
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptors.UnaryServerInterceptor),
+	)
+	pbuser.RegisterUserServiceServer(grpcServer, userController)
+	pbauth.RegisterAuthServiceServer(grpcServer, authController)
 
 	// TODO: créer une variable d'environnement pour ne pas
 	// activer cette fonctionnalité lors d'une éventuelle mise en production
@@ -75,4 +74,18 @@ func main() {
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+func setupUserController(db *sql.DB) *controller.UserController {
+	userRepo := repository.NewUserRepository(db)
+	userUsecase := usecase.NewUserUsecase(userRepo)
+
+	return controller.NewUserController(userUsecase)
+}
+
+func setupAuthController(db *sql.DB) *controller.AuthController {
+	userRepo := repository.NewUserRepository(db)
+	userUsecase := usecase.NewUserUsecase(userRepo)
+
+	return controller.NewAuthController(userUsecase, "temporary_secret_key")
 }
