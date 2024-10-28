@@ -11,6 +11,7 @@ import (
 	infrastructure "github.com/rijenth/gRPC/internal/infrastructure/database"
 	"github.com/rijenth/gRPC/internal/infrastructure/interceptors"
 	"github.com/rijenth/gRPC/internal/infrastructure/repository"
+	"github.com/rijenth/gRPC/internal/infrastructure/services"
 	"github.com/rijenth/gRPC/internal/interfaces/controller"
 	"github.com/rijenth/gRPC/internal/usecase"
 
@@ -84,8 +85,9 @@ func setupUserController(db *sql.DB) *controller.UserController {
 }
 
 func setupAuthController(db *sql.DB) *controller.AuthController {
+	passwordHasher := services.NewBcryptPasswordHasher(10)
 	userRepo := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepo)
 
-	return controller.NewAuthController(userUsecase, "temporary_secret_key")
+	return controller.NewAuthController(userUsecase, passwordHasher, "temporary_secret_key")
 }
