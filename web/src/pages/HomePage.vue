@@ -1,5 +1,21 @@
+<script setup lang="ts">
+import { useAuth } from "../state/useAuth";
+import UserAuthentication from "../widgets/UserAuthentication.vue";
+
+const auth = useAuth();
+</script>
+
 <template>
-  <p class="info-message">TODO: Page d'accueil</p>
+  <div>
+    <p class="info-message">
+      Etat de connexion:
+      {{ auth.state.authenticated ? "Connecté" : "Déconnecté" }}
+    </p>
+
+    <br />
+
+    <UserAuthentication v-if="!auth.state.authenticated" />
+  </div>
 </template>
 
 <style scoped>
