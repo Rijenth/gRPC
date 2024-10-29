@@ -5,6 +5,7 @@ import ErrorMessage from "../components/ErrorMessage.vue";
 import { useAuth } from "../state/useAuth";
 import LabelledInput from "../components/LabelledInput.vue";
 import AuthApi from "../api/auth.api";
+import { jwtDecode } from "jwt-decode";
 
 const auth = useAuth();
 const authApi = new AuthApi();
@@ -23,7 +24,12 @@ const handleLogin = async () => {
   const response = await authApi.login(username.value, password.value);
 
   if (typeof response !== "string") {
-    auth.login(response.token);
+    const decodedToken = response.token
+      ? (jwtDecode(response.token) as { name?: string })
+      : null;
+    const username = decodedToken?.name || undefined;
+
+    auth.login(response.token, username);
 
     return;
   }

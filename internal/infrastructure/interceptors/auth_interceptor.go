@@ -2,9 +2,9 @@ package interceptors
 
 import (
 	"context"
-	"log"
 	"strings"
 
+	"github.com/rijenth/gRPC/internal/contextkeys"
 	authpb "github.com/rijenth/gRPC/internal/grpc/auth"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -51,11 +51,14 @@ func UnaryServerInterceptor(JWTsecretKey string) grpc.UnaryServerInterceptor {
 			return nil, status.Errorf(codes.Unauthenticated, "invalid token: %v", err)
 		}
 
+		ctx = context.WithValue(ctx, contextkeys.AuthenticatedUserUsernameKey, claims.Username)
+
 		resp, err := handler(ctx, req)
 
 		if err != nil {
-			log.Printf("Error processing request: %v", err)
-			return nil, status.Errorf(codes.Internal, "internal server error")
+			code := status.Code(err)
+			message := status.Convert(err).Message()
+			return nil, status.Errorf(code, message)
 		}
 
 		return resp, nil

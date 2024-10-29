@@ -24,7 +24,7 @@ func (c *UserController) Index(ctx context.Context, request *pb.Empty) (*pb.GetA
 	users, err := c.usecase.GetAllUsers(ctx)
 
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, err
 	}
 
 	var pbUsers []*pb.User
@@ -60,11 +60,11 @@ func (c *UserController) Index(ctx context.Context, request *pb.Empty) (*pb.GetA
 func (c *UserController) Get(ctx context.Context, request *pb.GetUserByIdRequest) (*pb.UserResponse, error) {
 	user, err := c.usecase.GetUserByID(ctx, int(request.Id))
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, err
 	}
 
 	if user == nil {
-		return nil, status.Errorf(codes.NotFound, "User not found")
+		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
 
 	var lastLogin *timestamppb.Timestamp
@@ -95,7 +95,7 @@ func (c *UserController) Get(ctx context.Context, request *pb.GetUserByIdRequest
 
 func (c *UserController) Delete(ctx context.Context, request *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	if err := c.usecase.DeleteUser(ctx, int(request.Id)); err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, err
 	}
 
 	return &pb.DeleteUserResponse{

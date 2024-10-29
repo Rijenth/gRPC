@@ -28,7 +28,7 @@ func (authController *AuthController) Login(ctx context.Context, req *pb.LoginRe
 	user, err := authController.usecase.GetUserByUsername(ctx, req.Username)
 
 	if err != nil {
-		return nil, status.Errorf(codes.PermissionDenied, err.Error())
+		return nil, err
 	}
 
 	if err := authController.passwordHasher.ComparePassword(user.Password, req.Password); err != nil {
