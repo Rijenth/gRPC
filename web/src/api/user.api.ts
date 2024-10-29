@@ -12,7 +12,7 @@ export default class UserApi extends Api {
     );
   }
 
-  public async index(): Promise<GetAllUsersResponse | null> {
+  public async index(): Promise<GetAllUsersResponse | string> {
     try {
       const request = await this.userServiceClient.index({});
 
@@ -20,27 +20,23 @@ export default class UserApi extends Api {
 
       return { users };
     } catch (error) {
-      this.handleRequestError(
+      return this.getMessageFromRequestError(
         error,
-        "[user.api.ts] Erreur lors de la récupération des utilisateurs:",
+        "[user.api.ts] Erreur lors de la récupération des utilisateurs",
       );
-
-      return null;
     }
   }
 
-  public async delete(id: number): Promise<DeleteUserResponse | null> {
+  public async delete(id: number): Promise<DeleteUserResponse | string> {
     try {
       const request = await this.userServiceClient.delete({ id });
 
       return request.response;
     } catch (error) {
-      this.handleRequestError(
+      return this.getMessageFromRequestError(
         error,
-        "[user.api.ts] Erreur lors de la suppression de l'utilisateur:",
+        "[user.api.ts] Erreur lors de la suppression de l'utilisateur",
       );
-
-      return null;
     }
   }
 }

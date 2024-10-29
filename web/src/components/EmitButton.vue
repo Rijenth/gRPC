@@ -29,7 +29,7 @@ const handleClick = () => {
 <style scoped>
 .btn {
   display: inline-block;
-  padding: 10px 20px;
+  padding: 10px;
   font-size: 16px;
   font-weight: 500;
   color: #ffffff;

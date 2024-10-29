@@ -1,16 +1,32 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { routes } from "../router/router";
+import { useAuth } from "../state/useAuth";
+
+const auth = useAuth();
+
+const navbarRoutes = computed(() =>
+  routes
+    .filter((route) => route.meta.addToNavbar)
+    .filter(
+      (route) =>
+        route.meta.requiresAuth === false ||
+        route.meta.requiresAuth === auth.state.authenticated,
+    ),
+);
+</script>
+
 <template>
   <nav class="menu">
-    <router-link to="/" class="button" :class="{ active: $route.path === '/' }">
-      Accueil
-    </router-link>
-
-    <router-link
-      to="/users-list"
-      class="button"
-      :class="{ active: $route.path === '/users-list' }"
-    >
-      Mes utilisateurs
-    </router-link>
+    <div v-for="route in navbarRoutes" :key="route.path">
+      <router-link
+        :to="route.path"
+        class="button"
+        :class="{ active: $route.path === route.path }"
+      >
+        {{ route.name }}
+      </router-link>
+    </div>
   </nav>
 </template>
 

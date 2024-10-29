@@ -5,8 +5,8 @@ import { ResponsiveTableType } from "../types/responsive_table.type";
 import ErrorMessage from "../components/ErrorMessage.vue";
 import ResponsiveTable from "../components/ResponsiveTable.vue";
 import BasicModal from "../components/BasicModal.vue";
-import { ConvertTimestampToHumanReadable } from "../utils/ConvertTimestampToHumanReadable";
-import { ConvertPhoneNumberToHumanReadable } from "../utils/ConvertPhoneNumberToHumanReadable";
+import { ConvertTimestampToHumanReadable } from "../composables/ConvertTimestampToHumanReadable";
+import { ConvertPhoneNumberToHumanReadable } from "../composables/ConvertPhoneNumberToHumanReadable";
 import EmitButton from "../components/EmitButton.vue";
 import UserApi from "../api/user.api";
 
@@ -32,6 +32,11 @@ const fetchAllUsers = async () => {
   errorMessage.value = null;
 
   const response = await userApi.index();
+
+  if (typeof response === "string") {
+    errorMessage.value = response;
+    return;
+  }
 
   if (response?.users) {
     response?.users.forEach((user: User) => {
@@ -80,6 +85,11 @@ const handleDeleteUserFromList = async () => {
   }
 
   const response = await userApi.delete(selectedUser.value.id);
+
+  if (typeof response === "string") {
+    errorMessage.value = response;
+    return;
+  }
 
   if (response?.success) {
     users.value = users.value.filter(

@@ -74,6 +74,8 @@ services:
     ports:
       - 8080:8080
     restart: always
+    networks:
+      - envoy-network
 
 networks:
   envoy-network:

@@ -4,6 +4,8 @@ import (
 	"context"
 
 	pb "github.com/rijenth/gRPC/internal/grpc/user"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/rijenth/gRPC/internal/usecase"
@@ -61,6 +63,10 @@ func (c *UserController) Get(ctx context.Context, request *pb.GetUserByIdRequest
 		return nil, err
 	}
 
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+
 	var lastLogin *timestamppb.Timestamp
 	if user.LastLogin != nil {
 		lastLogin = timestamppb.New(*user.LastLogin)
@@ -89,9 +95,7 @@ func (c *UserController) Get(ctx context.Context, request *pb.GetUserByIdRequest
 
 func (c *UserController) Delete(ctx context.Context, request *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	if err := c.usecase.DeleteUser(ctx, int(request.Id)); err != nil {
-		return &pb.DeleteUserResponse{
-			Success: false,
-		}, err
+		return nil, err
 	}
 
 	return &pb.DeleteUserResponse{
