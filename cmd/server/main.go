@@ -16,29 +16,7 @@ import (
 	"github.com/rijenth/gRPC/internal/usecase"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
-
-// my-go-project/
-// │
-// ├── cmd/                     # Points d'entrée de l'application (par exemple, l'exécutable main.go)
-// │   └── myapp/
-// │       └── main.go
-// │
-// ├── internal/                # Le code de votre application (le cœur) qui ne doit pas être exposé
-// │   ├── domain/              # Couche domaine : Entités et logique métier pure
-// │   │   └── entity.go        # Entités et règles métier
-// │   ├── usecase/             # Couche application : Cas d'utilisation / logique applicative
-// │   │   └── my_usecase.go
-// │   ├── interfaces/          # Couche interface : Ports (Interfaces) pour les adaptateurs externes
-// │   │   ├── controller/      # Adaptateurs web / API (handlers)
-// │   │   └── repository/      # Interfaces pour les dépôts de données
-// │   └── infrastructure/      # Couche infrastructure : Adaptateurs externes concrets (BD, API externes)
-// │       ├── repository/      # Implémentations des dépôts
-// │       └── database/        # Gestion des connexions DB
-// ├── database/                # Scripts de migration et initialisation de la base de données
-// ├── web/                     # Client Web (React, Angular, Vue.js)
-// └── go.mod                   # Déclaration des modules et dépendances
 
 func main() {
 	db, err := infrastructure.InitDB()
@@ -47,14 +25,18 @@ func main() {
 	}
 	defer db.Close()
 
-	authController := setupAuthController(db)
-	userController := setupUserController(db)
-
 	grpcServerPortConfig, err := config.LoadGrpcServerPortConfig()
-
 	if err != nil {
 		log.Fatalf("failed to load gRPC server port config: %v", err)
 	}
+
+	jwtSecretKeyConfig, err := config.LoadJwtConfig()
+	if err != nil {
+		log.Fatalf("failed to load JWT secret")
+	}
+
+	authController := setupAuthController(db, jwtSecretKeyConfig)
+	userController := setupUserController(db)
 
 	lis, err := net.Listen("tcp", ":"+grpcServerPortConfig.GrpcServerPort)
 
@@ -63,14 +45,14 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(interceptors.UnaryServerInterceptor),
+		grpc.UnaryInterceptor(interceptors.UnaryServerInterceptor(jwtSecretKeyConfig.SecretKey)),
 	)
-	pbuser.RegisterUserServiceServer(grpcServer, userController)
 	pbauth.RegisterAuthServiceServer(grpcServer, authController)
+	pbuser.RegisterUserServiceServer(grpcServer, userController)
 
 	// TODO: créer une variable d'environnement pour ne pas
 	// activer cette fonctionnalité lors d'une éventuelle mise en production
-	reflection.Register(grpcServer)
+	//reflection.Register(grpcServer)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
@@ -84,10 +66,10 @@ func setupUserController(db *sql.DB) *controller.UserController {
 	return controller.NewUserController(userUsecase)
 }
 
-func setupAuthController(db *sql.DB) *controller.AuthController {
+func setupAuthController(db *sql.DB, jwtSecretKeyConfig *config.JwtConfig) *controller.AuthController {
 	passwordHasher := services.NewBcryptPasswordHasher(10)
 	userRepo := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepo)
 
-	return controller.NewAuthController(userUsecase, passwordHasher, "temporary_secret_key")
+	return controller.NewAuthController(userUsecase, passwordHasher, jwtSecretKeyConfig.SecretKey)
 }

@@ -4,8 +4,6 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { AuthService } from "./auth";
-import type { ValidateTokenResponse } from "./auth";
-import type { ValidateTokenRequest } from "./auth";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { LoginResponse } from "./auth";
 import type { LoginRequest } from "./auth";
@@ -19,10 +17,6 @@ export interface IAuthServiceClient {
      * @generated from protobuf rpc: Login(auth.LoginRequest) returns (auth.LoginResponse);
      */
     login(input: LoginRequest, options?: RpcOptions): UnaryCall<LoginRequest, LoginResponse>;
-    /**
-     * @generated from protobuf rpc: ValidateToken(auth.ValidateTokenRequest) returns (auth.ValidateTokenResponse);
-     */
-    validateToken(input: ValidateTokenRequest, options?: RpcOptions): UnaryCall<ValidateTokenRequest, ValidateTokenResponse>;
 }
 /**
  * @generated from protobuf service auth.AuthService
@@ -39,12 +33,5 @@ export class AuthServiceClient implements IAuthServiceClient, ServiceInfo {
     login(input: LoginRequest, options?: RpcOptions): UnaryCall<LoginRequest, LoginResponse> {
         const method = this.methods[0], opt = this._transport.mergeOptions(options);
         return stackIntercept<LoginRequest, LoginResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: ValidateToken(auth.ValidateTokenRequest) returns (auth.ValidateTokenResponse);
-     */
-    validateToken(input: ValidateTokenRequest, options?: RpcOptions): UnaryCall<ValidateTokenRequest, ValidateTokenResponse> {
-        const method = this.methods[1], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ValidateTokenRequest, ValidateTokenResponse>("unary", this._transport, method, opt, input);
     }
 }
