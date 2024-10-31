@@ -57,8 +57,8 @@ func (c *UserController) Index(ctx context.Context, request *pb.Empty) (*pb.GetA
 	return &pb.GetAllUsersResponse{Users: pbUsers}, nil
 }
 
-func (c *UserController) Get(ctx context.Context, request *pb.GetUserByIdRequest) (*pb.UserResponse, error) {
-	user, err := c.usecase.GetUserByID(ctx, int(request.Id))
+func (c *UserController) Get(ctx context.Context, request *pb.GetUserByUsername) (*pb.UserResponse, error) {
+	user, err := c.usecase.GetUserByUsername(ctx, request.Username)
 	if err != nil {
 		return nil, err
 	}

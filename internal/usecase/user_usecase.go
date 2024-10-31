@@ -10,7 +10,6 @@ import (
 // les cas d'utilisation (dans la couche usecase) ne devraient pas dépendre directement des implémentations concrètes
 type UserRepository interface {
 	GetAllUsers(ctx context.Context) ([]*domain.User, error)
-	GetUserByID(ctx context.Context, id int) (*domain.User, error)
 	GetUserByUsername(ctx context.Context, username string) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
@@ -27,10 +26,6 @@ func NewUserUsecase(repository UserRepository) *UserUsecase {
 
 func (uc *UserUsecase) GetAllUsers(ctx context.Context) ([]*domain.User, error) {
 	return uc.repository.GetAllUsers(ctx)
-}
-
-func (uc *UserUsecase) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
-	return uc.repository.GetUserByID(ctx, id)
 }
 
 func (uc *UserUsecase) GetUserByUsername(ctx context.Context, username string) (*domain.User, error) {

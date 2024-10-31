@@ -31,7 +31,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	Index(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetAllUsersResponse, error)
-	Get(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	Get(ctx context.Context, in *GetUserByUsername, opts ...grpc.CallOption) (*UserResponse, error)
 	Store(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	Patch(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	Delete(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
@@ -55,7 +55,7 @@ func (c *userServiceClient) Index(ctx context.Context, in *Empty, opts ...grpc.C
 	return out, nil
 }
 
-func (c *userServiceClient) Get(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *userServiceClient) Get(ctx context.Context, in *GetUserByUsername, opts ...grpc.CallOption) (*UserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserResponse)
 	err := c.cc.Invoke(ctx, UserService_Get_FullMethodName, in, out, cOpts...)
@@ -100,7 +100,7 @@ func (c *userServiceClient) Delete(ctx context.Context, in *DeleteUserRequest, o
 // for forward compatibility.
 type UserServiceServer interface {
 	Index(context.Context, *Empty) (*GetAllUsersResponse, error)
-	Get(context.Context, *GetUserByIdRequest) (*UserResponse, error)
+	Get(context.Context, *GetUserByUsername) (*UserResponse, error)
 	Store(context.Context, *CreateUserRequest) (*UserResponse, error)
 	Patch(context.Context, *UpdateUserRequest) (*UserResponse, error)
 	Delete(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
@@ -117,7 +117,7 @@ type UnimplementedUserServiceServer struct{}
 func (UnimplementedUserServiceServer) Index(context.Context, *Empty) (*GetAllUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Index not implemented")
 }
-func (UnimplementedUserServiceServer) Get(context.Context, *GetUserByIdRequest) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) Get(context.Context, *GetUserByUsername) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedUserServiceServer) Store(context.Context, *CreateUserRequest) (*UserResponse, error) {
@@ -169,7 +169,7 @@ func _UserService_Index_Handler(srv interface{}, ctx context.Context, dec func(i
 }
 
 func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserByIdRequest)
+	in := new(GetUserByUsername)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -181,7 +181,7 @@ func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: UserService_Get_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).Get(ctx, req.(*GetUserByIdRequest))
+		return srv.(UserServiceServer).Get(ctx, req.(*GetUserByUsername))
 	}
 	return interceptor(ctx, in, info, handler)
 }
