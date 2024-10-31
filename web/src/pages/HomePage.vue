@@ -8,8 +8,11 @@ const auth = useAuth();
 <template>
   <div>
     <p class="info-message">
-      Etat de connexion:
-      {{ auth.state.authenticated ? "Connecté" : "Déconnecté" }}
+      {{
+        auth.state.authenticated
+          ? "Connecté en tant que " + auth.state.username
+          : "Déconnecté"
+      }}
     </p>
 
     <br />
