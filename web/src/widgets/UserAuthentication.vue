@@ -77,7 +77,6 @@ const handleLogin = async () => {
 
 h2 {
   margin-bottom: 20px;
-  color: #333;
 }
 
 .form-group {

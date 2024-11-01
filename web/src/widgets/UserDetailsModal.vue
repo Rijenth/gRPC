@@ -3,9 +3,8 @@ import { ref } from "vue";
 import BasicModal from "../components/BasicModal.vue";
 import UserApi from "../api/user.api";
 import { User } from "../generated/user";
-import { ConvertPhoneNumberToHumanReadable } from "../composables/ConvertPhoneNumberToHumanReadable";
-import { ConvertTimestampToHumanReadable } from "../composables/ConvertTimestampToHumanReadable";
 import EmitButton from "../components/EmitButton.vue";
+import UserPersonalInfoDisplay from "../components/UserPersonalInfoDisplay.vue";
 
 const props = defineProps<{
   selectedUser: User | null;
@@ -53,18 +52,10 @@ const handleDeleteUserFromList = async () => {
           selectedUser?.lastName.toUpperCase() + " " + selectedUser?.firstName
         }}
       </h2>
+
       <hr class="separator" />
-      <p><strong>Nom d'utilisateur : </strong>{{ selectedUser?.username }}</p>
-      <p><strong>Adresse mail : </strong>{{ selectedUser?.email }}</p>
-      <p>
-        <strong>Numéro de téléphone : </strong
-        >{{ ConvertPhoneNumberToHumanReadable(selectedUser?.phoneNumber) }}
-      </p>
-      <p>
-        <strong>Date de naissance : </strong
-        >{{ ConvertTimestampToHumanReadable(selectedUser?.dateOfBirth) }}
-      </p>
-      <p><strong>Biographie : </strong>{{ selectedUser?.bio }}</p>
+
+      <UserPersonalInfoDisplay :user="props.selectedUser" />
 
       <div class="modal-actions">
         <EmitButton
@@ -90,24 +81,18 @@ const handleDeleteUserFromList = async () => {
 <style scoped>
 .title {
   text-align: center;
-  border: 1px solid #333;
+  border: 1px solid #7289da;
   border-radius: 5px;
   padding: 10px;
 }
 
 .separator {
-  margin: 40px 0;
+  margin: 20px 0;
 }
 
 .modal-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
-}
-
-@media (max-width: 600px) {
-  .separator {
-    margin: 0;
-  }
 }
 </style>
