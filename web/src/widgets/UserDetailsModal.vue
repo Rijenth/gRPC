@@ -3,8 +3,8 @@ import { ref } from "vue";
 import BasicModal from "../components/BasicModal.vue";
 import UserApi from "../api/user.api";
 import { User } from "../generated/user";
-import EmitButton from "../components/EmitButton.vue";
-import UserPersonalInfoDisplay from "../components/UserPersonalInfoDisplay.vue";
+import OnclickButton from "../components/OnclickButton.vue";
+import UserPersonalInfoDisplay from "./UserPersonalInfo.vue";
 
 const props = defineProps<{
   selectedUser: User | null;
@@ -58,7 +58,7 @@ const handleDeleteUserFromList = async () => {
       <UserPersonalInfoDisplay :user="props.selectedUser" />
 
       <div class="modal-actions">
-        <EmitButton
+        <OnclickButton
           text="Fermer"
           :onButtonClick="
             () => {
@@ -67,7 +67,7 @@ const handleDeleteUserFromList = async () => {
           "
         />
 
-        <EmitButton
+        <OnclickButton
           text="Retirer de votre liste"
           :onButtonClick="handleDeleteUserFromList"
           backgroundColor="#d93939"

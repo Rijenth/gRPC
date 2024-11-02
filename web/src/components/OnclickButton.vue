@@ -50,9 +50,4 @@ const handleClick = () => {
   background-color: darken(var(--hover-color), 10%);
   transform: scale(0.98);
 }
-
-.btn:focus {
-  outline: 2px solid var(--hover-color);
-  outline-offset: 2px;
-}
 </style>

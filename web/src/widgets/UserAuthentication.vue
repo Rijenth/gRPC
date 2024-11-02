@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import EmitButton from "../components/EmitButton.vue";
+import OnclickButton from "../components/OnclickButton.vue";
 import ErrorMessage from "../components/ErrorMessage.vue";
 import { useAuth } from "../state/useAuth";
 import LabelledInput from "../components/LabelledInput.vue";
@@ -60,7 +60,7 @@ const handleLogin = async () => {
       placeholder="Entrez votre mot de passe"
     />
 
-    <EmitButton :onButtonClick="handleLogin" text="Se connecter" />
+    <OnclickButton :onButtonClick="handleLogin" text="Se connecter" />
   </div>
 </template>
 

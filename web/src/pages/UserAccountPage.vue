@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { User } from "../generated/user";
 import UserApi from "../api/user.api";
 import { useAuth } from "../state/useAuth";
 import ErrorMessage from "../components/ErrorMessage.vue";
-import UserPersonalInfoDisplay from "../components/UserPersonalInfoDisplay.vue";
+import UserPersonalInfoDisplay from "../widgets/UserPersonalInfo.vue";
+
+const navBarItems = ["Informations personnelles", "Changer mon mot de passe"];
+const selectedNavIndex = ref<number>(0);
+const selectedNavItem = computed(() => navBarItems[selectedNavIndex.value]);
 
 const auth = useAuth();
 const userApi = new UserApi();
@@ -44,14 +48,28 @@ onMounted(async () => {
         <h2 class="nav-title">Navigation</h2>
         <nav>
           <ul>
-            <li>Informations personnelles</li>
-            <li>Changer mon mot de passe</li>
+            <li
+              v-for="(navItem, index) in navBarItems"
+              :key="index"
+              @click="selectedNavIndex = index"
+              :style="{ color: selectedNavIndex === index ? '#7289da' : '' }"
+            >
+              {{ navItem }}
+            </li>
           </ul>
         </nav>
       </div>
 
-      <div class="user-personal-info">
-        <UserPersonalInfoDisplay :user="user" />
+      <UserPersonalInfoDisplay
+        v-if="selectedNavItem === 'Informations personnelles'"
+        :user="user"
+        :updateMode="true"
+        @updatedUser="user = $event"
+      />
+
+      <div v-else>
+        <h2>Changer mon mot de passe</h2>
+        <p>Work in progress...</p>
       </div>
     </div>
   </div>
@@ -78,6 +96,7 @@ onMounted(async () => {
   padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   min-width: 250px;
+  max-height: 160px;
 }
 
 .user-details nav ul {
@@ -92,11 +111,6 @@ onMounted(async () => {
   margin-bottom: 15px;
   color: #7289da;
   text-decoration: underline;
-}
-
-.user-personal-info * {
-  border: none;
-  box-shadow: none;
 }
 
 ul {
