@@ -23,7 +23,10 @@ watch(
   },
 );
 
-const emit = defineEmits(["updated", "rulesNotMet"]);
+const emit = defineEmits<{
+  (event: "updated", value: string): void;
+  (event: "rulesNotMet", value: boolean): void;
+}>();
 
 watch(
   () => localValue.value,

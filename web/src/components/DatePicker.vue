@@ -56,6 +56,9 @@ watch(dateValue, (newDate) => {
       :format="(date: Date) => date.toLocaleDateString('fr-FR')"
       :clearable="false"
       :enableTimePicker="false"
+      :selectText="'valider'"
+      :cancelText="'annuler'"
+      :maxDate="new Date()"
     />
     <p v-else>{{ dateValue ? dateValue.toLocaleDateString("fr-FR") : "" }}</p>
   </div>

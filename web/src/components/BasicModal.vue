@@ -9,6 +9,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["basic-modal:close"]);
+
 const visible = ref(props.show);
 
 watch(

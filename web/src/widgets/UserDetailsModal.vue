@@ -11,7 +11,10 @@ const props = defineProps<{
   showModal: boolean;
 }>();
 
-const emit = defineEmits(["selected-user:deleted", "show-modal:update"]);
+const emit = defineEmits<{
+  (event: "selected-user:deleted", user: User): void;
+  (event: "show-modal:update", value: boolean): void;
+}>();
 
 const userApi = new UserApi();
 const errorMessage = ref<string | null>(null);
