@@ -5,6 +5,8 @@ import { ConvertTimestampToHumanReadable } from "../composables/ConvertTimestamp
 import OnclickButton from "../components/OnclickButton.vue";
 import EditableParagraph from "../components/EditableParagraph.vue";
 import UserModel from "../models/user.model";
+import DatePicker from "../components/DatePicker.vue";
+import { Timestamp } from "../generated/google/protobuf/timestamp";
 
 const props = defineProps<{
   user: User | null;
@@ -12,6 +14,7 @@ const props = defineProps<{
 }>();
 
 const allowUpdate = ref<boolean>(false);
+const updateButtonDisabled = ref<boolean>(false);
 const localUser = ref<UserModel | null>(null);
 
 watch(
@@ -33,11 +36,15 @@ watch(
 
     <EditableParagraph
       v-if="localUser"
-      title="Nom d'utilisateur"
-      :value="localUser.username"
-      :updateMode="allowUpdate"
+      :params="{
+        title: 'Nom d\'utilisateur',
+        value: localUser.username,
+        updateable: allowUpdate,
+      }"
+      :inputRules="['required']"
+      @rulesNotMet="updateButtonDisabled = $event"
       @updated="
-        (value) => {
+        (value: string) => {
           if (localUser) {
             localUser.username = value;
           }
@@ -47,11 +54,15 @@ watch(
 
     <EditableParagraph
       v-if="localUser"
-      title="Nom"
-      :value="localUser.lastName"
-      :updateMode="allowUpdate"
+      :params="{
+        title: 'Nom',
+        value: localUser.lastName,
+        updateable: allowUpdate,
+      }"
+      :inputRules="['required', { minLength: 2 }, { maxLength: 20 }]"
+      @rulesNotMet="updateButtonDisabled = $event"
       @updated="
-        (value) => {
+        (value: string) => {
           if (localUser) {
             localUser.lastName = value;
           }
@@ -61,11 +72,15 @@ watch(
 
     <EditableParagraph
       v-if="localUser"
-      title="Prénom"
-      :value="localUser.firstName"
-      :updateMode="allowUpdate"
+      :params="{
+        title: 'Prénom',
+        value: localUser.firstName,
+        updateable: allowUpdate,
+      }"
+      :inputRules="['required']"
+      @rulesNotMet="updateButtonDisabled = $event"
       @updated="
-        (value) => {
+        (value: string) => {
           if (localUser) {
             localUser.firstName = value;
           }
@@ -73,13 +88,32 @@ watch(
       "
     />
 
+    <DatePicker
+      v-if="localUser"
+      title="Né(e) le"
+      :timestamp="localUser.dateOfBirth"
+      :updateable="allowUpdate"
+      @updated="
+        (timestamp: Timestamp) => {
+          if (localUser) {
+            localUser.dateOfBirth = timestamp;
+          }
+        }
+      "
+    />
+
     <EditableParagraph
       v-if="localUser"
-      title="Adresse mail"
-      :value="localUser.email"
-      :updateMode="allowUpdate"
+      :params="{
+        title: 'Adresse mail',
+        value: localUser.email,
+        updateable: allowUpdate,
+      }"
+      :inputType="'email'"
+      :inputRules="['required', 'email']"
+      @rulesNotMet="updateButtonDisabled = $event"
       @updated="
-        (value) => {
+        (value: string) => {
           if (localUser) {
             localUser.email = value;
           }
@@ -89,13 +123,17 @@ watch(
 
     <EditableParagraph
       v-if="localUser"
-      title="Né(e) le"
-      :value="localUser.getDateOfBirth()"
-      :updateMode="allowUpdate"
+      :params="{
+        title: 'Adresse',
+        value: localUser.address,
+        updateable: allowUpdate,
+      }"
+      :inputRules="['required']"
+      @rulesNotMet="updateButtonDisabled = $event"
       @updated="
-        (value) => {
+        (value: string) => {
           if (localUser) {
-            localUser.dateOfBirth = value;
+            localUser.address = value;
           }
         }
       "
@@ -103,11 +141,16 @@ watch(
 
     <EditableParagraph
       v-if="localUser"
-      title="Numéro de téléphone"
-      :value="localUser.getPhoneNumber()"
-      :updateMode="allowUpdate"
+      :params="{
+        title: 'Numéro de téléphone',
+        value: localUser.phoneNumber,
+        updateable: allowUpdate,
+      }"
+      :inputType="'tel'"
+      :inputRules="['required', 'phone']"
+      @rulesNotMet="updateButtonDisabled = $event"
       @updated="
-        (value) => {
+        (value: string) => {
           if (localUser) {
             localUser.phoneNumber = value;
           }
@@ -117,11 +160,15 @@ watch(
 
     <EditableParagraph
       v-if="localUser"
-      title="Biographie"
-      :value="localUser.bio"
-      :updateMode="allowUpdate"
+      :params="{
+        title: 'Biographie',
+        value: localUser.bio,
+        updateable: allowUpdate,
+      }"
+      :inputRules="['required']"
+      @rulesNotMet="updateButtonDisabled = $event"
       @updated="
-        (value) => {
+        (value: string) => {
           if (localUser) {
             localUser.bio = value;
           }
@@ -138,6 +185,22 @@ watch(
       v-if="updateMode"
       :onButtonClick="() => (allowUpdate = !allowUpdate)"
       :text="allowUpdate ? 'Enregistrer' : 'Modifier'"
+      :disabled="updateButtonDisabled"
+    />
+
+    <OnclickButton
+      v-if="allowUpdate"
+      :onButtonClick="
+        () => {
+          if (localUser && props.user) {
+            localUser = new UserModel(props.user);
+          }
+
+          allowUpdate = false;
+        }
+      "
+      style="background-color: #f44336; margin-left: 10px"
+      text="Annuler"
     />
   </div>
 </template>

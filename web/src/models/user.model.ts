@@ -1,4 +1,3 @@
-import { ConvertPhoneNumberToHumanReadable } from "../composables/ConvertPhoneNumberToHumanReadable";
 import { ConvertTimestampToHumanReadable } from "../composables/ConvertTimestampToHumanReadable";
 import { Timestamp } from "../generated/google/protobuf/timestamp";
 import { User } from "../generated/user";
@@ -42,19 +41,16 @@ export default class UserModel implements User {
     return ConvertTimestampToHumanReadable(this.dateOfBirth);
   }
 
-  public getCreatedAt(): string {
-    return ConvertTimestampToHumanReadable(this.createdAt);
-  }
+  public setDateOfBirth(dateOfBirth: string): void {
+    const date = new Date(dateOfBirth);
 
-  public getUpdatedAt(): string {
-    return ConvertTimestampToHumanReadable(this.updatedAt);
-  }
+    if (isNaN(date.getTime())) {
+      return (this.dateOfBirth = undefined);
+    }
 
-  public getLastLogin(): string {
-    return ConvertTimestampToHumanReadable(this.lastLogin);
-  }
-
-  public getPhoneNumber(): string {
-    return ConvertPhoneNumberToHumanReadable(this.phoneNumber);
+    this.dateOfBirth = {
+      seconds: BigInt(Math.floor(date.getTime() / 1000)),
+      nanos: (date.getTime() % 1000) * 1e6,
+    };
   }
 }

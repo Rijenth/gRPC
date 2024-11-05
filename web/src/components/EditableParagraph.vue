@@ -1,35 +1,66 @@
 <script setup lang="ts">
 import { defineProps, ref, watch } from "vue";
+import ErrorMessage from "./ErrorMessage.vue";
+import useInputValidate from "../composables/inputValidate";
+import { InputRules } from "../types/input_rules.type";
 
 const props = defineProps<{
-  title: string;
-  value: string;
-  updateMode?: boolean;
+  params: {
+    title: string;
+    value: string;
+    updateable?: boolean;
+  };
+  inputType?: string;
+  inputRules?: InputRules[];
 }>();
-
-const localValue = ref(props.value);
+const errorMessage = ref<string>("");
+const localValue = ref(props.params.value);
 
 watch(
-  () => props.value,
+  () => props.params.value,
   (newValue) => {
     localValue.value = newValue;
   },
 );
 
-const emit = defineEmits(["updated"]);
+const emit = defineEmits(["updated", "rulesNotMet"]);
+
+watch(
+  () => localValue.value,
+  (newValue) => {
+    validate();
+    emit("updated", newValue);
+  },
+);
+
+const validate = () => {
+  errorMessage.value = "";
+
+  if (!props.inputRules) {
+    return;
+  }
+
+  const message = useInputValidate(localValue.value, props.inputRules);
+
+  if (!message) {
+    emit("rulesNotMet", false);
+    return;
+  }
+
+  emit("rulesNotMet", true);
+
+  errorMessage.value = message;
+};
 </script>
 
 <template>
   <div>
-    <strong>{{ title }} :</strong>
-    <p v-if="!updateMode">{{ localValue }}</p>
+    <strong>{{ params.title }} :</strong>
+    <p v-if="!params.updateable">{{ localValue }}</p>
 
-    <input
-      v-else
-      type="text"
-      :onchange="() => emit('updated', localValue)"
-      v-model="localValue"
-    />
+    <input v-else :type="inputType || 'text'" v-model="localValue" />
+
+    <ErrorMessage v-if="errorMessage" :message="errorMessage" />
   </div>
 </template>
 
