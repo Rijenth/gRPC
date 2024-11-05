@@ -1,112 +1,158 @@
 <script setup lang="ts">
-import { defineProps, ref, watch } from "vue";
-import { User } from "../generated/user";
+import { defineProps, onMounted, ref } from "vue";
 import { ConvertTimestampToHumanReadable } from "../composables/ConvertTimestampToHumanReadable";
 import OnclickButton from "../components/OnclickButton.vue";
 import EditableParagraph from "../components/EditableParagraph.vue";
 import UserModel from "../models/user.model";
 import DatePicker from "../components/DatePicker.vue";
 import { Timestamp } from "../generated/google/protobuf/timestamp";
+import UserApi from "../api/user.api";
+import { useAuth } from "../state/useAuth";
+import ErrorMessage from "../components/ErrorMessage.vue";
 
 const props = defineProps<{
-  user: User | null;
   updateMode?: boolean;
+  username?: string;
 }>();
 
+const userApi = new UserApi();
+const auth = useAuth();
+
+const user = ref<UserModel | null>(null);
+const errorMessage = ref<string>("");
 const allowUpdate = ref<boolean>(false);
 const updateButtonDisabled = ref<boolean>(false);
-const localUser = ref<UserModel | null>(null);
 
-watch(
-  () => props.user,
-  (newValue) => {
-    if (!newValue) {
-      return;
-    }
+// const patchUser = async () => {
+//   if (!user.value) {
+//     return;
+//   }
 
-    localUser.value = new UserModel(newValue);
-  },
-  { immediate: true },
-);
+//   const response = await userApi.patch(user.value);
+
+//   if (typeof response === "string") {
+//     console.error(response);
+//     return;
+//   }
+
+//   if (!response.user) {
+//     console.error("Unable to update user information");
+//     return;
+//   }
+
+//   // Il faut mettre à jour le user dans le composant parent, surtout pas ici
+//   //emit("updated", response.user);
+// };
+
+const fetchAndFillUser = async () => {
+  errorMessage.value = "";
+
+  let username = props.username ?? auth.state.username;
+
+  if (!username) {
+    errorMessage.value =
+      "Unable to retrieve user information, no username provided";
+    return;
+  }
+
+  const response = await userApi.getByUsername(username);
+
+  if (typeof response === "string") {
+    errorMessage.value = response;
+    return;
+  }
+
+  if (!response.user) {
+    errorMessage.value = "Unable to retrieve user information from the server";
+    return;
+  }
+
+  user.value = new UserModel(response.user);
+};
+
+onMounted(async () => {
+  fetchAndFillUser();
+});
 </script>
 
 <template>
   <div class="user-personal-info">
     <h2>Informations personnelles</h2>
+    <ErrorMessage v-if="errorMessage" :message="errorMessage" />
 
     <EditableParagraph
-      v-if="localUser"
+      v-if="user"
       :params="{
         title: 'Nom d\'utilisateur',
-        value: localUser.username,
+        value: user.username,
         updateable: allowUpdate,
       }"
       :inputRules="['required']"
       @rulesNotMet="updateButtonDisabled = $event"
       @updated="
         (value: string) => {
-          if (localUser) {
-            localUser.username = value;
+          if (user) {
+            user.username = value;
           }
         }
       "
     />
 
     <EditableParagraph
-      v-if="localUser"
+      v-if="user"
       :params="{
         title: 'Nom',
-        value: localUser.lastName,
+        value: user.lastName,
         updateable: allowUpdate,
       }"
       :inputRules="['required', { minLength: 2 }, { maxLength: 20 }]"
       @rulesNotMet="updateButtonDisabled = $event"
       @updated="
         (value: string) => {
-          if (localUser) {
-            localUser.lastName = value;
+          if (user) {
+            user.lastName = value;
           }
         }
       "
     />
 
     <EditableParagraph
-      v-if="localUser"
+      v-if="user"
       :params="{
         title: 'Prénom',
-        value: localUser.firstName,
+        value: user.firstName,
         updateable: allowUpdate,
       }"
       :inputRules="['required']"
       @rulesNotMet="updateButtonDisabled = $event"
       @updated="
         (value: string) => {
-          if (localUser) {
-            localUser.firstName = value;
+          if (user) {
+            user.firstName = value;
           }
         }
       "
     />
 
     <DatePicker
-      v-if="localUser"
+      v-if="user"
       title="Né(e) le"
-      :timestamp="localUser.dateOfBirth"
+      :timestamp="user.dateOfBirth"
       :updateable="allowUpdate"
       @updated="
         (timestamp: Timestamp) => {
-          if (localUser) {
-            localUser.dateOfBirth = timestamp;
+          if (user) {
+            user.dateOfBirth = timestamp;
           }
         }
       "
     />
 
     <EditableParagraph
-      v-if="localUser"
+      v-if="user"
       :params="{
         title: 'Adresse mail',
-        value: localUser.email,
+        value: user.email,
         updateable: allowUpdate,
       }"
       :inputType="'email'"
@@ -114,36 +160,36 @@ watch(
       @rulesNotMet="updateButtonDisabled = $event"
       @updated="
         (value: string) => {
-          if (localUser) {
-            localUser.email = value;
+          if (user) {
+            user.email = value;
           }
         }
       "
     />
 
     <EditableParagraph
-      v-if="localUser"
+      v-if="user"
       :params="{
         title: 'Adresse',
-        value: localUser.address,
+        value: user.address,
         updateable: allowUpdate,
       }"
       :inputRules="['required']"
       @rulesNotMet="updateButtonDisabled = $event"
       @updated="
         (value: string) => {
-          if (localUser) {
-            localUser.address = value;
+          if (user) {
+            user.address = value;
           }
         }
       "
     />
 
     <EditableParagraph
-      v-if="localUser"
+      v-if="user"
       :params="{
         title: 'Numéro de téléphone',
-        value: localUser.phoneNumber,
+        value: user.phoneNumber,
         updateable: allowUpdate,
       }"
       :inputType="'tel'"
@@ -151,26 +197,26 @@ watch(
       @rulesNotMet="updateButtonDisabled = $event"
       @updated="
         (value: string) => {
-          if (localUser) {
-            localUser.phoneNumber = value;
+          if (user) {
+            user.phoneNumber = value;
           }
         }
       "
     />
 
     <EditableParagraph
-      v-if="localUser"
+      v-if="user"
       :params="{
         title: 'Biographie',
-        value: localUser.bio,
+        value: user.bio,
         updateable: allowUpdate,
       }"
       :inputRules="['required']"
       @rulesNotMet="updateButtonDisabled = $event"
       @updated="
         (value: string) => {
-          if (localUser) {
-            localUser.bio = value;
+          if (user) {
+            user.bio = value;
           }
         }
       "
@@ -192,10 +238,7 @@ watch(
       v-if="allowUpdate"
       :onButtonClick="
         () => {
-          if (localUser && props.user) {
-            localUser = new UserModel(props.user);
-          }
-
+          fetchAndFillUser();
           allowUpdate = false;
         }
       "

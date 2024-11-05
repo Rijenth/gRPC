@@ -1,48 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { User } from "../generated/user";
-import UserApi from "../api/user.api";
-import { useAuth } from "../state/useAuth";
-import ErrorMessage from "../components/ErrorMessage.vue";
-import UserPersonalInfoDisplay from "../widgets/UserPersonalInfo.vue";
+import { computed, ref } from "vue";
+import UserPersonalInfo from "../widgets/UserPersonalInfo.vue";
 
 const navBarItems = ["Informations personnelles", "Changer mon mot de passe"];
 const selectedNavIndex = ref<number>(0);
 const selectedNavItem = computed(() => navBarItems[selectedNavIndex.value]);
-
-const auth = useAuth();
-const userApi = new UserApi();
-const user = ref<User | null>(null);
-const errorMessage = ref<string>("");
-
-onMounted(async () => {
-  errorMessage.value = "";
-
-  if (!auth.state.username) {
-    errorMessage.value = "Unable to retrieve user information from the state";
-    return;
-  }
-
-  const response = await userApi.getByUsername(auth.state.username);
-
-  if (typeof response === "string") {
-    errorMessage.value = response;
-    return;
-  }
-
-  if (!response.user) {
-    errorMessage.value = "Unable to retrieve user information from the server";
-    return;
-  }
-
-  user.value = response.user;
-});
 </script>
 
 <template>
   <div class="container">
-    <ErrorMessage v-if="errorMessage" :message="errorMessage" />
-
     <div class="main">
       <div class="user-details">
         <h2 class="nav-title">Navigation</h2>
@@ -60,11 +26,9 @@ onMounted(async () => {
         </nav>
       </div>
 
-      <UserPersonalInfoDisplay
+      <UserPersonalInfo
         v-if="selectedNavItem === 'Informations personnelles'"
-        :user="user"
         :updateMode="true"
-        @updatedUser="user = $event"
       />
 
       <div v-else>

@@ -4,7 +4,7 @@ import BasicModal from "../components/BasicModal.vue";
 import UserApi from "../api/user.api";
 import { User } from "../generated/user";
 import OnclickButton from "../components/OnclickButton.vue";
-import UserPersonalInfoDisplay from "./UserPersonalInfo.vue";
+import UserPersonalInfo from "./UserPersonalInfo.vue";
 
 const props = defineProps<{
   selectedUser: User | null;
@@ -58,7 +58,7 @@ const handleDeleteUserFromList = async () => {
 
       <hr class="separator" />
 
-      <UserPersonalInfoDisplay :user="props.selectedUser" />
+      <UserPersonalInfo :username="props.selectedUser?.username" />
 
       <div class="modal-actions">
         <OnclickButton
