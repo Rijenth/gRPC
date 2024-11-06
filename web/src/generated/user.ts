@@ -179,9 +179,9 @@ export interface UpdateUserRequest {
      */
     lastName: string;
     /**
-     * @generated from protobuf field: string date_of_birth = 6;
+     * @generated from protobuf field: google.protobuf.Timestamp date_of_birth = 6;
      */
-    dateOfBirth: string;
+    dateOfBirth?: Timestamp;
     /**
      * @generated from protobuf field: string address = 7;
      */
@@ -673,7 +673,7 @@ class UpdateUserRequest$Type extends MessageType<UpdateUserRequest> {
             { no: 3, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 4, name: "first_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 5, name: "last_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 6, name: "date_of_birth", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "date_of_birth", kind: "message", T: () => Timestamp },
             { no: 7, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 8, name: "phone_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 9, name: "profile_picture", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
@@ -689,7 +689,6 @@ class UpdateUserRequest$Type extends MessageType<UpdateUserRequest> {
         message.email = "";
         message.firstName = "";
         message.lastName = "";
-        message.dateOfBirth = "";
         message.address = "";
         message.phoneNumber = "";
         message.profilePicture = "";
@@ -720,8 +719,8 @@ class UpdateUserRequest$Type extends MessageType<UpdateUserRequest> {
                 case /* string last_name */ 5:
                     message.lastName = reader.string();
                     break;
-                case /* string date_of_birth */ 6:
-                    message.dateOfBirth = reader.string();
+                case /* google.protobuf.Timestamp date_of_birth */ 6:
+                    message.dateOfBirth = Timestamp.internalBinaryRead(reader, reader.uint32(), options, message.dateOfBirth);
                     break;
                 case /* string address */ 7:
                     message.address = reader.string();
@@ -768,9 +767,9 @@ class UpdateUserRequest$Type extends MessageType<UpdateUserRequest> {
         /* string last_name = 5; */
         if (message.lastName !== "")
             writer.tag(5, WireType.LengthDelimited).string(message.lastName);
-        /* string date_of_birth = 6; */
-        if (message.dateOfBirth !== "")
-            writer.tag(6, WireType.LengthDelimited).string(message.dateOfBirth);
+        /* google.protobuf.Timestamp date_of_birth = 6; */
+        if (message.dateOfBirth)
+            Timestamp.internalBinaryWrite(message.dateOfBirth, writer.tag(6, WireType.LengthDelimited).fork(), options).join();
         /* string address = 7; */
         if (message.address !== "")
             writer.tag(7, WireType.LengthDelimited).string(message.address);

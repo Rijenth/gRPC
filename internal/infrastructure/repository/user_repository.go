@@ -80,6 +80,30 @@ func (r *UserRepositoryImpl) GetUserByUsername(ctx context.Context, username str
 	return &user, nil
 }
 
+func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
+	query := `SELECT id , username, email, password, first_name, last_name, date_of_birth, address, phone_number, profile_picture, bio, is_active, is_admin, created_at, updated_at, last_login FROM users WHERE id = ?`
+
+	row := r.db.QueryRowContext(ctx, query, id)
+
+	var user domain.User
+
+	err := row.Scan(
+		&user.ID, &user.Username, &user.Email, &user.Password, &user.FirstName, &user.LastName,
+		&user.DateOfBirth, &user.Address, &user.PhoneNumber, &user.ProfilePicture,
+		&user.Bio, &user.IsActive, &user.IsAdmin, &user.CreatedAt, &user.UpdatedAt, &user.LastLogin,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Errorf(codes.NotFound, "user with id %s not found", id)
+		}
+
+		return nil, status.Errorf(codes.Internal, "failed to scan user: %v", err)
+	}
+
+	return &user, nil
+}
+
 func (r *UserRepositoryImpl) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
 	log.Println("TODO: CreateUser")
 
@@ -87,9 +111,20 @@ func (r *UserRepositoryImpl) CreateUser(ctx context.Context, user *domain.User) 
 }
 
 func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
-	log.Println("TODO: UpdateUser")
 
-	return nil, nil
+	query := `UPDATE users SET email = ?, first_name = ?, last_name = ?, date_of_birth = ?, address = ?, phone_number = ?, profile_picture = ?, bio = ?, is_active = ?, is_admin = ?, updated_at = ? WHERE id = ?`
+
+	_, err := r.db.ExecContext(ctx, query, user.Email, user.FirstName, user.LastName, user.DateOfBirth, user.Address, user.PhoneNumber, user.ProfilePicture, user.Bio, user.IsActive, user.IsAdmin, user.UpdatedAt, user.ID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Errorf(codes.NotFound, "user with username %s not found", user.Username)
+		}
+
+		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
+	}
+
+	return user, nil
 }
 
 func (r *UserRepositoryImpl) DeleteUser(ctx context.Context, id int) error {
