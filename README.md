@@ -76,9 +76,9 @@ Permet de **simuler des requêtes** vers un serveur gRPC et d'interagir avec les
         ```
 
      3. **Appeler une méthode gRPC avec des paramètres** :
-        Exemple d'appel de la méthode `GetUserById` sur le service `UserService` en envoyant un ID d'utilisateur.
+        Exemple d'appel de la méthode `GetUserByUsername` sur le service `UserService` en envoyant un ID d'utilisateur.
         ```bash
-        grpcurl -plaintext -d '{"id": 1}' localhost:8000 user.UserService/GetUserById
+        grpcurl -plaintext -d '{"id": alice_d}' localhost:8000 user.UserService/GetUserByUsername
         ```
 
      4. **Lister les méthodes disponibles d'un service gRPC** :

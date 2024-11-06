@@ -57,8 +57,8 @@ func (c *UserController) Index(ctx context.Context, request *pb.Empty) (*pb.GetA
 	return &pb.GetAllUsersResponse{Users: pbUsers}, nil
 }
 
-func (c *UserController) Get(ctx context.Context, request *pb.GetUserByIdRequest) (*pb.UserResponse, error) {
-	user, err := c.usecase.GetUserByID(ctx, int(request.Id))
+func (c *UserController) Get(ctx context.Context, request *pb.GetUserByUsername) (*pb.UserResponse, error) {
+	user, err := c.usecase.GetUserByUsername(ctx, request.Username)
 	if err != nil {
 		return nil, err
 	}
@@ -103,4 +103,45 @@ func (c *UserController) Delete(ctx context.Context, request *pb.DeleteUserReque
 	}, nil
 }
 
-// TODO: Post, Patch.
+func (c *UserController) Patch(ctx context.Context, request *pb.UpdateUserRequest) (*pb.UserResponse, error) {
+	if request.Id == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "User ID is required")
+	}
+
+	updatedUser, err := c.usecase.UpdateUser(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if updatedUser == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+
+	var lastLogin *timestamppb.Timestamp
+	if updatedUser.LastLogin != nil {
+		lastLogin = timestamppb.New(*updatedUser.LastLogin)
+	}
+
+	return &pb.UserResponse{
+		User: &pb.User{
+			Id:             int32(updatedUser.ID),
+			Username:       updatedUser.Username,
+			Email:          updatedUser.Email,
+			FirstName:      updatedUser.FirstName,
+			LastName:       updatedUser.LastName,
+			DateOfBirth:    timestamppb.New(updatedUser.DateOfBirth),
+			Address:        updatedUser.Address,
+			PhoneNumber:    updatedUser.PhoneNumber,
+			CreatedAt:      timestamppb.New(updatedUser.CreatedAt),
+			UpdatedAt:      timestamppb.New(updatedUser.UpdatedAt),
+			LastLogin:      lastLogin,
+			IsActive:       updatedUser.IsActive,
+			IsAdmin:        updatedUser.IsAdmin,
+			ProfilePicture: updatedUser.ProfilePicture,
+			Bio:            updatedUser.Bio,
+		},
+	}, nil
+}
+
+// TODO: Post.

@@ -9,7 +9,7 @@ import "google/protobuf/timestamp.proto";
 service UserService {
     rpc Index(Empty) returns (GetAllUsersResponse);
 
-    rpc Get(GetUserByIdRequest) returns (UserResponse);
+    rpc Get(GetUserByUsername) returns (UserResponse);
     
     rpc Store(CreateUserRequest) returns (UserResponse);
 
@@ -36,8 +36,8 @@ message User {
     string bio = 15;
 }
 
-message GetUserByIdRequest {
-    int32 id = 1;
+message GetUserByUsername {
+    string username = 1;
 }
 
 message UserResponse {
@@ -69,7 +69,7 @@ message UpdateUserRequest {
     string email = 3;
     string first_name = 4;
     string last_name = 5;
-    string date_of_birth = 6;
+    google.protobuf.Timestamp date_of_birth = 6;
     string address = 7;
     string phone_number = 8;
     string profile_picture = 9;

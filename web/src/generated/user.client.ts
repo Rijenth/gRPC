@@ -9,7 +9,7 @@ import type { DeleteUserRequest } from "./user";
 import type { UpdateUserRequest } from "./user";
 import type { CreateUserRequest } from "./user";
 import type { UserResponse } from "./user";
-import type { GetUserByIdRequest } from "./user";
+import type { GetUserByUsername } from "./user";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { GetAllUsersResponse } from "./user";
 import type { Empty } from "./user";
@@ -24,9 +24,9 @@ export interface IUserServiceClient {
      */
     index(input: Empty, options?: RpcOptions): UnaryCall<Empty, GetAllUsersResponse>;
     /**
-     * @generated from protobuf rpc: Get(user.GetUserByIdRequest) returns (user.UserResponse);
+     * @generated from protobuf rpc: Get(user.GetUserByUsername) returns (user.UserResponse);
      */
-    get(input: GetUserByIdRequest, options?: RpcOptions): UnaryCall<GetUserByIdRequest, UserResponse>;
+    get(input: GetUserByUsername, options?: RpcOptions): UnaryCall<GetUserByUsername, UserResponse>;
     /**
      * @generated from protobuf rpc: Store(user.CreateUserRequest) returns (user.UserResponse);
      */
@@ -57,11 +57,11 @@ export class UserServiceClient implements IUserServiceClient, ServiceInfo {
         return stackIntercept<Empty, GetAllUsersResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: Get(user.GetUserByIdRequest) returns (user.UserResponse);
+     * @generated from protobuf rpc: Get(user.GetUserByUsername) returns (user.UserResponse);
      */
-    get(input: GetUserByIdRequest, options?: RpcOptions): UnaryCall<GetUserByIdRequest, UserResponse> {
+    get(input: GetUserByUsername, options?: RpcOptions): UnaryCall<GetUserByUsername, UserResponse> {
         const method = this.methods[1], opt = this._transport.mergeOptions(options);
-        return stackIntercept<GetUserByIdRequest, UserResponse>("unary", this._transport, method, opt, input);
+        return stackIntercept<GetUserByUsername, UserResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: Store(user.CreateUserRequest) returns (user.UserResponse);

@@ -15,6 +15,7 @@
     "@protobuf-ts/grpcweb-transport": "^2.9.4",
     "@protobuf-ts/runtime": "^2.9.4",
     "@protobuf-ts/runtime-rpc": "^2.9.4",
+    "@vuepic/vue-datepicker": "^9.0.3",
     "jwt-decode": "^4.0.0",
     "vue": "^3.4.37",
     "vue-router": "^4.4.5"

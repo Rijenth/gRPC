@@ -6,6 +6,7 @@ const props = defineProps<{
   text: string;
   backgroundColor?: string;
   hoverColor?: string;
+  disabled?: boolean;
 }>();
 
 const handleClick = () => {
@@ -17,9 +18,11 @@ const handleClick = () => {
   <button
     class="btn"
     @click="handleClick"
+    :disabled="props.disabled"
     :style="{
       '--bg-color': props.backgroundColor || '#7289da',
       '--hover-color': props.hoverColor || '#5d6eab',
+      cursor: props.disabled ? 'not-allowed' : 'pointer',
     }"
   >
     <span>{{ props.text }}</span>
@@ -49,10 +52,5 @@ const handleClick = () => {
 .btn:active {
   background-color: darken(var(--hover-color), 10%);
   transform: scale(0.98);
-}
-
-.btn:focus {
-  outline: 2px solid var(--hover-color);
-  outline-offset: 2px;
 }
 </style>

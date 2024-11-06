@@ -9,7 +9,9 @@ defineProps({
   placeholder: { type: String, default: "" },
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits<{
+  (event: "update:modelValue", value: string): void;
+}>();
 
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement | null;

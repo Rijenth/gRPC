@@ -9,7 +9,12 @@ const props = defineProps<{
   table: ResponsiveTableType;
 }>();
 
-const emit = defineEmits(["responsive-table:row-click"]);
+const emit = defineEmits<{
+  (
+    event: "responsive-table:row-click",
+    rowValues: Record<string, string>,
+  ): void;
+}>();
 
 const handleRowClick = (row: ResponsiveTableMatrix[]) => {
   let rowValues = row.reduce(

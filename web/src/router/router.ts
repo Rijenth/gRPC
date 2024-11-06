@@ -14,7 +14,16 @@ export const routes = [
   {
     path: "/users-list",
     name: "Mes utilisateurs",
-    component: () => import("../pages/UsersList.vue"),
+    component: () => import("../pages/UsersListPage.vue"),
+    meta: {
+      addToNavbar: true,
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/my-account",
+    name: "Mon compte",
+    component: () => import("../pages/UserAccountPage.vue"),
     meta: {
       addToNavbar: true,
       requiresAuth: true,
@@ -32,7 +41,7 @@ export const routes = [
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
-    component: () => import("../pages/NotFound.vue"),
+    component: () => import("../pages/NotFoundPage.vue"),
     meta: {
       addToNavbar: false,
       requiresAuth: false,

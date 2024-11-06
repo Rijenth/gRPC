@@ -78,13 +78,13 @@ export interface User {
     bio: string;
 }
 /**
- * @generated from protobuf message user.GetUserByIdRequest
+ * @generated from protobuf message user.GetUserByUsername
  */
-export interface GetUserByIdRequest {
+export interface GetUserByUsername {
     /**
-     * @generated from protobuf field: int32 id = 1;
+     * @generated from protobuf field: string username = 1;
      */
-    id: number;
+    username: string;
 }
 /**
  * @generated from protobuf message user.UserResponse
@@ -179,9 +179,9 @@ export interface UpdateUserRequest {
      */
     lastName: string;
     /**
-     * @generated from protobuf field: string date_of_birth = 6;
+     * @generated from protobuf field: google.protobuf.Timestamp date_of_birth = 6;
      */
-    dateOfBirth: string;
+    dateOfBirth?: Timestamp;
     /**
      * @generated from protobuf field: string address = 7;
      */
@@ -381,26 +381,26 @@ class User$Type extends MessageType<User> {
  */
 export const User = new User$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class GetUserByIdRequest$Type extends MessageType<GetUserByIdRequest> {
+class GetUserByUsername$Type extends MessageType<GetUserByUsername> {
     constructor() {
-        super("user.GetUserByIdRequest", [
-            { no: 1, name: "id", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        super("user.GetUserByUsername", [
+            { no: 1, name: "username", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<GetUserByIdRequest>): GetUserByIdRequest {
+    create(value?: PartialMessage<GetUserByUsername>): GetUserByUsername {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.id = 0;
+        message.username = "";
         if (value !== undefined)
-            reflectionMergePartial<GetUserByIdRequest>(this, message, value);
+            reflectionMergePartial<GetUserByUsername>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetUserByIdRequest): GetUserByIdRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetUserByUsername): GetUserByUsername {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* int32 id */ 1:
-                    message.id = reader.int32();
+                case /* string username */ 1:
+                    message.username = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -413,10 +413,10 @@ class GetUserByIdRequest$Type extends MessageType<GetUserByIdRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: GetUserByIdRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* int32 id = 1; */
-        if (message.id !== 0)
-            writer.tag(1, WireType.Varint).int32(message.id);
+    internalBinaryWrite(message: GetUserByUsername, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string username = 1; */
+        if (message.username !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.username);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -424,9 +424,9 @@ class GetUserByIdRequest$Type extends MessageType<GetUserByIdRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message user.GetUserByIdRequest
+ * @generated MessageType for protobuf message user.GetUserByUsername
  */
-export const GetUserByIdRequest = new GetUserByIdRequest$Type();
+export const GetUserByUsername = new GetUserByUsername$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class UserResponse$Type extends MessageType<UserResponse> {
     constructor() {
@@ -673,7 +673,7 @@ class UpdateUserRequest$Type extends MessageType<UpdateUserRequest> {
             { no: 3, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 4, name: "first_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 5, name: "last_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 6, name: "date_of_birth", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "date_of_birth", kind: "message", T: () => Timestamp },
             { no: 7, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 8, name: "phone_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 9, name: "profile_picture", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
@@ -689,7 +689,6 @@ class UpdateUserRequest$Type extends MessageType<UpdateUserRequest> {
         message.email = "";
         message.firstName = "";
         message.lastName = "";
-        message.dateOfBirth = "";
         message.address = "";
         message.phoneNumber = "";
         message.profilePicture = "";
@@ -720,8 +719,8 @@ class UpdateUserRequest$Type extends MessageType<UpdateUserRequest> {
                 case /* string last_name */ 5:
                     message.lastName = reader.string();
                     break;
-                case /* string date_of_birth */ 6:
-                    message.dateOfBirth = reader.string();
+                case /* google.protobuf.Timestamp date_of_birth */ 6:
+                    message.dateOfBirth = Timestamp.internalBinaryRead(reader, reader.uint32(), options, message.dateOfBirth);
                     break;
                 case /* string address */ 7:
                     message.address = reader.string();
@@ -768,9 +767,9 @@ class UpdateUserRequest$Type extends MessageType<UpdateUserRequest> {
         /* string last_name = 5; */
         if (message.lastName !== "")
             writer.tag(5, WireType.LengthDelimited).string(message.lastName);
-        /* string date_of_birth = 6; */
-        if (message.dateOfBirth !== "")
-            writer.tag(6, WireType.LengthDelimited).string(message.dateOfBirth);
+        /* google.protobuf.Timestamp date_of_birth = 6; */
+        if (message.dateOfBirth)
+            Timestamp.internalBinaryWrite(message.dateOfBirth, writer.tag(6, WireType.LengthDelimited).fork(), options).join();
         /* string address = 7; */
         if (message.address !== "")
             writer.tag(7, WireType.LengthDelimited).string(message.address);
@@ -898,7 +897,7 @@ export const DeleteUserResponse = new DeleteUserResponse$Type();
  */
 export const UserService = new ServiceType("user.UserService", [
     { name: "Index", options: {}, I: Empty, O: GetAllUsersResponse },
-    { name: "Get", options: {}, I: GetUserByIdRequest, O: UserResponse },
+    { name: "Get", options: {}, I: GetUserByUsername, O: UserResponse },
     { name: "Store", options: {}, I: CreateUserRequest, O: UserResponse },
     { name: "Patch", options: {}, I: UpdateUserRequest, O: UserResponse },
     { name: "Delete", options: {}, I: DeleteUserRequest, O: DeleteUserResponse }
