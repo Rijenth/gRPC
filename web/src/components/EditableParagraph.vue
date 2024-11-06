@@ -12,6 +12,8 @@ const props = defineProps<{
   };
   inputType?: string;
   inputRules?: InputRules[];
+  informationBubble?: boolean;
+  informationMessage?: string;
 }>();
 const errorMessage = ref<string>("");
 const localValue = ref(props.params.value);
@@ -59,6 +61,9 @@ const validate = () => {
 <template>
   <div>
     <strong>{{ params.title }} :</strong>
+    <p class="info" v-if="informationBubble && params.updateable">
+      {{ informationMessage }}
+    </p>
     <p v-if="!params.updateable">{{ localValue }}</p>
 
     <input v-else :type="inputType || 'text'" v-model="localValue" />
@@ -75,5 +80,14 @@ input {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.info {
+  font-size: 0.8em;
+  background-color: #f9e79f;
+  color: #9c8112;
+  border: 1px solid #f1c40f;
+  border-radius: 5px;
+  padding: 10px;
 }
 </style>

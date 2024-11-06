@@ -32,13 +32,16 @@ export default class Api {
     return this.transport;
   }
 
-  public getMessageFromRequestError(error: unknown, message: string): string {
+  public getMessageFromRequestError(
+    error: unknown,
+    defaultMessage: string,
+  ): string {
     if (error instanceof RpcError) {
       return "[" + error.code + "] " + error.message;
     }
 
     console.error(error);
 
-    return message;
+    return defaultMessage;
   }
 }

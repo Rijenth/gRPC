@@ -1,6 +1,7 @@
 import {
   DeleteUserResponse,
   GetAllUsersResponse,
+  UpdateUserRequest,
   UserResponse,
 } from "../generated/user";
 import { UserServiceClient } from "../generated/user.client";
@@ -42,6 +43,23 @@ export default class UserApi extends Api {
       return this.getMessageFromRequestError(
         error,
         "[user.api.ts] Erreur lors de la récupération de l'utilisateur",
+      );
+    }
+  }
+
+  public async patch(
+    updateUserRequest: UpdateUserRequest,
+  ): Promise<UserResponse | string> {
+    try {
+      const request = await this.userServiceClient.patch(updateUserRequest);
+
+      const user = request.response?.user || undefined;
+
+      return { user };
+    } catch (error) {
+      return this.getMessageFromRequestError(
+        error,
+        "[user.api.ts] Erreur lors de la mise à jour de l'utilisateur",
       );
     }
   }

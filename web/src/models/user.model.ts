@@ -1,6 +1,5 @@
-import { ConvertTimestampToHumanReadable } from "../composables/ConvertTimestampToHumanReadable";
 import { Timestamp } from "../generated/google/protobuf/timestamp";
-import { User } from "../generated/user";
+import { UpdateUserRequest, User } from "../generated/user";
 
 export default class UserModel implements User {
   public id: number;
@@ -37,20 +36,20 @@ export default class UserModel implements User {
     this.bio = user.bio;
   }
 
-  public getDateOfBirth(): string {
-    return ConvertTimestampToHumanReadable(this.dateOfBirth);
-  }
-
-  public setDateOfBirth(dateOfBirth: string): void {
-    const date = new Date(dateOfBirth);
-
-    if (isNaN(date.getTime())) {
-      return (this.dateOfBirth = undefined);
-    }
-
-    this.dateOfBirth = {
-      seconds: BigInt(Math.floor(date.getTime() / 1000)),
-      nanos: (date.getTime() % 1000) * 1e6,
+  public updateUserRequestFormat(): UpdateUserRequest {
+    return {
+      id: this.id,
+      username: this.username,
+      email: this.email,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      dateOfBirth: this.dateOfBirth,
+      address: this.address,
+      phoneNumber: this.phoneNumber,
+      isActive: this.isActive,
+      isAdmin: this.isAdmin,
+      profilePicture: this.profilePicture,
+      bio: this.bio,
     };
   }
 }

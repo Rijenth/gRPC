@@ -10,6 +10,7 @@ const props = defineProps<{
   updateable?: boolean;
 }>();
 
+const locale = ref<string>("fr");
 const dateValue = ref<Date | null>(convertTimestampToDate(props.timestamp));
 
 function convertTimestampToDate(timestamp?: Timestamp): Date | null {
@@ -56,9 +57,9 @@ watch(dateValue, (newDate) => {
       :format="(date: Date) => date.toLocaleDateString('fr-FR')"
       :clearable="false"
       :enableTimePicker="false"
-      :selectText="'valider'"
-      :cancelText="'annuler'"
+      :autoApply="true"
       :maxDate="new Date()"
+      :locale="locale"
     />
     <p v-else>{{ dateValue ? dateValue.toLocaleDateString("fr-FR") : "" }}</p>
   </div>

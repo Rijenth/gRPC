@@ -9,6 +9,7 @@ import { Timestamp } from "../generated/google/protobuf/timestamp";
 import UserApi from "../api/user.api";
 import { useAuth } from "../state/useAuth";
 import ErrorMessage from "../components/ErrorMessage.vue";
+import router from "../router/router";
 
 const props = defineProps<{
   updateMode?: boolean;
@@ -19,38 +20,55 @@ const userApi = new UserApi();
 const auth = useAuth();
 
 const user = ref<UserModel | null>(null);
-const errorMessage = ref<string>("");
+const fetchAndFillUserErrorMessage = ref<string>("");
+const patchUserErrorMessage = ref<string>("");
 const allowUpdate = ref<boolean>(false);
 const updateButtonDisabled = ref<boolean>(false);
 
-// const patchUser = async () => {
-//   if (!user.value) {
-//     return;
-//   }
+const patchUser = async () => {
+  fetchAndFillUserErrorMessage.value = "";
+  patchUserErrorMessage.value = "";
 
-//   const response = await userApi.patch(user.value);
+  if (!user.value) {
+    patchUserErrorMessage.value =
+      "Unable to update user information, no user provided";
+    fetchAndFillUser();
+    return;
+  }
 
-//   if (typeof response === "string") {
-//     console.error(response);
-//     return;
-//   }
+  let currentUsername = auth.state.username;
 
-//   if (!response.user) {
-//     console.error("Unable to update user information");
-//     return;
-//   }
+  const response = await userApi.patch(user.value.updateUserRequestFormat());
 
-//   // Il faut mettre à jour le user dans le composant parent, surtout pas ici
-//   //emit("updated", response.user);
-// };
+  if (typeof response === "string") {
+    patchUserErrorMessage.value = response;
+    fetchAndFillUser();
+    return;
+  }
+
+  if (!response.user) {
+    patchUserErrorMessage.value =
+      "Unable to update user information on the server";
+    fetchAndFillUser();
+    return;
+  }
+
+  user.value = new UserModel(response.user);
+
+  if (currentUsername !== user.value.username) {
+    auth.logout();
+    router.push({ name: "Accueil" });
+    return;
+  }
+};
 
 const fetchAndFillUser = async () => {
-  errorMessage.value = "";
+  fetchAndFillUserErrorMessage.value = "";
 
   let username = props.username ?? auth.state.username;
 
   if (!username) {
-    errorMessage.value =
+    fetchAndFillUserErrorMessage.value =
       "Unable to retrieve user information, no username provided";
     return;
   }
@@ -58,12 +76,13 @@ const fetchAndFillUser = async () => {
   const response = await userApi.getByUsername(username);
 
   if (typeof response === "string") {
-    errorMessage.value = response;
+    fetchAndFillUserErrorMessage.value = response;
     return;
   }
 
   if (!response.user) {
-    errorMessage.value = "Unable to retrieve user information from the server";
+    fetchAndFillUserErrorMessage.value =
+      "Unable to retrieve user information from the server";
     return;
   }
 
@@ -78,7 +97,14 @@ onMounted(async () => {
 <template>
   <div class="user-personal-info">
     <h2>Informations personnelles</h2>
-    <ErrorMessage v-if="errorMessage" :message="errorMessage" />
+    <ErrorMessage
+      v-if="fetchAndFillUserErrorMessage"
+      :message="fetchAndFillUserErrorMessage"
+    />
+    <ErrorMessage
+      v-if="patchUserErrorMessage"
+      :message="patchUserErrorMessage"
+    />
 
     <EditableParagraph
       v-if="user"
@@ -88,6 +114,8 @@ onMounted(async () => {
         updateable: allowUpdate,
       }"
       :inputRules="['required']"
+      :information-bubble="true"
+      :information-message="`Pour des raisons de sécurité, toute modification de ce champ entraînera une déconnexion de votre session`"
       @rulesNotMet="updateButtonDisabled = $event"
       @updated="
         (value: string) => {
@@ -229,7 +257,12 @@ onMounted(async () => {
 
     <OnclickButton
       v-if="updateMode"
-      :onButtonClick="() => (allowUpdate = !allowUpdate)"
+      :onButtonClick="
+        async () => {
+          if (allowUpdate) await patchUser();
+          allowUpdate = !allowUpdate;
+        }
+      "
       :text="allowUpdate ? 'Enregistrer' : 'Modifier'"
       :disabled="updateButtonDisabled"
     />
