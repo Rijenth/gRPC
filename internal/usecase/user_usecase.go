@@ -6,10 +6,10 @@ import (
 
 	"github.com/rijenth/gRPC/internal/domain"
 	pb "github.com/rijenth/gRPC/internal/grpc/user"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-// Je défini l'interface UserRepository ici car, dans la clean architecture,
-// les cas d'utilisation (dans la couche usecase) ne devraient pas dépendre directement des implémentations concrètes
 type UserRepository interface {
 	GetAllUsers(ctx context.Context) ([]*domain.User, error)
 	GetUserByUsername(ctx context.Context, username string) (*domain.User, error)
@@ -47,6 +47,16 @@ func (uc *UserUsecase) UpdateUser(ctx context.Context, request *pb.UpdateUserReq
 	}
 
 	if request.Username != "" {
+		user, err := uc.repository.GetUserByUsername(ctx, request.Username)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if user != nil {
+			return nil, status.Errorf(codes.AlreadyExists, "This username is already taken")
+		}
+
 		user.Username = request.Username
 	}
 

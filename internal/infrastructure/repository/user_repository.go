@@ -112,13 +112,13 @@ func (r *UserRepositoryImpl) CreateUser(ctx context.Context, user *domain.User) 
 
 func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
 
-	query := `UPDATE users SET email = ?, first_name = ?, last_name = ?, date_of_birth = ?, address = ?, phone_number = ?, profile_picture = ?, bio = ?, is_active = ?, is_admin = ?, updated_at = ? WHERE id = ?`
+	query := `UPDATE users SET email = ?, username = ?, first_name = ?, last_name = ?, date_of_birth = ?, address = ?, phone_number = ?, profile_picture = ?, bio = ?, is_active = ?, is_admin = ?, updated_at = ? WHERE id = ?`
 
-	_, err := r.db.ExecContext(ctx, query, user.Email, user.FirstName, user.LastName, user.DateOfBirth, user.Address, user.PhoneNumber, user.ProfilePicture, user.Bio, user.IsActive, user.IsAdmin, user.UpdatedAt, user.ID)
+	_, err := r.db.ExecContext(ctx, query, user.Email, user.Username, user.FirstName, user.LastName, user.DateOfBirth, user.Address, user.PhoneNumber, user.ProfilePicture, user.Bio, user.IsActive, user.IsAdmin, user.UpdatedAt, user.ID)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, status.Errorf(codes.NotFound, "user with username %s not found", user.Username)
+			return nil, status.Errorf(codes.NotFound, "user with id %s not found", user.ID)
 		}
 
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
