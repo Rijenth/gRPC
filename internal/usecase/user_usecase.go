@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/rijenth/gRPC/internal/contextkeys"
 	"github.com/rijenth/gRPC/internal/domain"
 	pb "github.com/rijenth/gRPC/internal/grpc/user"
 	"google.golang.org/grpc/codes"
@@ -47,17 +48,25 @@ func (uc *UserUsecase) UpdateUser(ctx context.Context, request *pb.UpdateUserReq
 	}
 
 	if request.Username != "" {
-		user, err := uc.repository.GetUserByUsername(ctx, request.Username)
+		authenticatedUserUsername := ctx.Value(contextkeys.AuthenticatedUserUsernameKey).(string)
+
+		existingUser, err := uc.repository.GetUserByUsername(ctx, request.Username)
 
 		if err != nil {
-			return nil, err
+			code := status.Code(err)
+
+			if code != codes.NotFound {
+				return nil, err
+			}
 		}
 
-		if user != nil {
+		if existingUser != nil && existingUser.ID != int(request.Id) {
 			return nil, status.Errorf(codes.AlreadyExists, "This username is already taken")
 		}
 
-		user.Username = request.Username
+		if request.Username != authenticatedUserUsername {
+			user.Username = request.Username
+		}
 	}
 
 	if request.Email != "" {

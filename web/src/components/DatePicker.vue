@@ -54,7 +54,12 @@ watch(dateValue, (newDate) => {
     <Datepicker
       v-if="updateable"
       v-model="dateValue"
-      :format="(date: Date) => date.toLocaleDateString('fr-FR')"
+      :format="
+        (date?: Date) =>
+          date
+            ? date.toLocaleDateString('fr-FR')
+            : new Date().toLocaleDateString('fr-FR')
+      "
       :clearable="false"
       :enableTimePicker="false"
       :autoApply="true"

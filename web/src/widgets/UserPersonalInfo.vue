@@ -113,7 +113,7 @@ onMounted(async () => {
         value: user.username,
         updateable: allowUpdate,
       }"
-      :inputRules="['required']"
+      :inputRules="['required', { minLength: 5 }, { maxLength: 20 }]"
       :information-bubble="true"
       :information-message="`Pour des raisons de sécurité, toute modification de ce champ entraînera une déconnexion de votre session`"
       @rulesNotMet="updateButtonDisabled = $event"
@@ -151,7 +151,7 @@ onMounted(async () => {
         value: user.firstName,
         updateable: allowUpdate,
       }"
-      :inputRules="['required']"
+      :inputRules="['required', { minLength: 2 }, { maxLength: 20 }]"
       @rulesNotMet="updateButtonDisabled = $event"
       @updated="
         (value: string) => {
@@ -239,7 +239,7 @@ onMounted(async () => {
         value: user.bio,
         updateable: allowUpdate,
       }"
-      :inputRules="['required']"
+      :inputRules="['required', { minLength: 10 }, { maxLength: 20 }]"
       @rulesNotMet="updateButtonDisabled = $event"
       @updated="
         (value: string) => {
