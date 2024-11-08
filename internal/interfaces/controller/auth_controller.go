@@ -57,3 +57,32 @@ func (authController *AuthController) Login(ctx context.Context, req *pb.LoginRe
 		ExpiresIn: int64(expiresIn.Seconds()),
 	}, nil
 }
+
+func (authController *AuthController) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest) (*pb.UpdatePasswordResponse, error) {
+	user, err := authController.usecase.GetUserByUsername(ctx, req.Username)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if err := authController.passwordHasher.ComparePassword(user.Password, req.OldPassword); err != nil {
+		return nil, status.Errorf(codes.PermissionDenied, "aborting request due to incorrect password")
+	}
+
+	hashedPassword, err := authController.passwordHasher.HashPassword(req.NewPassword)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "could not hash password: %v", err)
+	}
+
+	user.Password = hashedPassword
+
+	_, err = authController.usecase.UpdateUserPassword(ctx, user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdatePasswordResponse{
+		Success: true,
+	}, nil
+}

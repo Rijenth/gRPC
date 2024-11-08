@@ -4,6 +4,11 @@ import BasicCard from "../components/BasicCard.vue";
 import EditableParagraph from "../components/EditableParagraph.vue";
 import OnclickButton from "../components/OnclickButton.vue";
 import ErrorMessage from "../components/ErrorMessage.vue";
+import AuthApi from "../api/auth.api";
+import { useAuth } from "../state/useAuth";
+
+const auth = useAuth();
+const authApi = new AuthApi();
 
 const currentPassword = ref<string>("");
 const newPassword = ref<string>("");
@@ -14,6 +19,29 @@ const newPasswordErrorMessage = ref<string>("");
 
 const updateMode = ref<boolean>(false);
 const updateButtonDisabled = ref<boolean>(false);
+
+const updateUserPassword = async () => {
+  currentPasswordErrorMessage.value = "";
+  newPasswordErrorMessage.value = "";
+
+  const response = await authApi.updatePassword(
+    auth.state.username ?? "",
+    currentPassword.value,
+    newPassword.value,
+  );
+
+  if (typeof response === "string") {
+    currentPasswordErrorMessage.value = response;
+    return;
+  }
+
+  if (response.success) {
+    currentPassword.value = "";
+    newPassword.value = "";
+    passwordConfirmation.value = "";
+    return;
+  }
+};
 
 const checkPasswordConfirmation = () => {
   if (newPassword.value !== passwordConfirmation.value) {
@@ -94,11 +122,19 @@ watch(
     <OnclickButton
       :onButtonClick="
         async () => {
+          if (updateMode) {
+            await updateUserPassword();
+          }
+
           updateMode = !updateMode;
         }
       "
       :text="updateMode ? 'Enregistrer' : 'Modifier'"
-      :disabled="updateMode && updateButtonDisabled"
+      :disabled="
+        (updateMode && updateButtonDisabled) ||
+        (updateMode &&
+          (!currentPassword || !newPassword || !passwordConfirmation))
+      "
     />
 
     <OnclickButton

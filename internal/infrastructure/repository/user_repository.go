@@ -127,6 +127,23 @@ func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, user *domain.User) 
 	return user, nil
 }
 
+func (r *UserRepositoryImpl) UpdateUserPassword(ctx context.Context, user *domain.User) (*domain.User, error) {
+
+	query := `UPDATE users SET password = ? WHERE id = ?`
+
+	_, err := r.db.ExecContext(ctx, query, user.Password, user.ID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Errorf(codes.NotFound, "user with id %s not found", user.ID)
+		}
+
+		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
+	}
+
+	return user, nil
+}
+
 func (r *UserRepositoryImpl) DeleteUser(ctx context.Context, id int) error {
 	query := `DELETE FROM users WHERE id = ?`
 
