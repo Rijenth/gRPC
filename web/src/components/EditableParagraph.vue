@@ -10,6 +10,7 @@ const props = defineProps<{
     value: string;
     updateable?: boolean;
   };
+  placeholder?: string;
   inputType?: string;
   inputRules?: InputRules[];
   informationBubble?: boolean;
@@ -64,11 +65,14 @@ const validate = () => {
     <p class="info" v-if="informationBubble && params.updateable">
       {{ informationMessage }}
     </p>
-    <p v-if="!params.updateable">{{ localValue }}</p>
+    <p v-if="!params.updateable">{{ placeholder || localValue }}</p>
 
     <input v-else :type="inputType || 'text'" v-model="localValue" />
 
-    <ErrorMessage v-if="errorMessage" :message="errorMessage" />
+    <ErrorMessage
+      v-if="errorMessage && params.updateable"
+      :message="errorMessage"
+    />
   </div>
 </template>
 

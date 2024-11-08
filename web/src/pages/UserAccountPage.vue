@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import UserPersonalInfo from "../widgets/UserPersonalInfo.vue";
+import UserPasswordEdit from "../widgets/UserPasswordEdit.vue";
 
 const navBarItems = ["Informations personnelles", "Changer mon mot de passe"];
 const selectedNavIndex = ref<number>(0);
@@ -31,10 +32,9 @@ const selectedNavItem = computed(() => navBarItems[selectedNavIndex.value]);
         :updateMode="true"
       />
 
-      <div v-else>
-        <h2>Changer mon mot de passe</h2>
-        <p>Work in progress...</p>
-      </div>
+      <UserPasswordEdit
+        v-else-if="selectedNavItem === 'Changer mon mot de passe'"
+      />
     </div>
   </div>
 </template>

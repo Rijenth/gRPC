@@ -10,6 +10,7 @@ import UserApi from "../api/user.api";
 import { useAuth } from "../state/useAuth";
 import ErrorMessage from "../components/ErrorMessage.vue";
 import router from "../router/router";
+import BasicCard from "../components/BasicCard.vue";
 
 const props = defineProps<{
   updateMode?: boolean;
@@ -95,8 +96,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="user-personal-info">
-    <h2>Informations personnelles</h2>
+  <BasicCard :title="'Informations personnelles'">
     <ErrorMessage
       v-if="fetchAndFillUserErrorMessage"
       :message="fetchAndFillUserErrorMessage"
@@ -278,31 +278,12 @@ onMounted(async () => {
       style="background-color: #f44336; margin-left: 10px"
       text="Annuler"
     />
-  </div>
+  </BasicCard>
 </template>
 
 <style>
-.user-personal-info {
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.user-personal-info h2 {
-  font-size: 1.5em;
-  margin-bottom: 15px;
-}
-
-.user-personal-info p {
+p {
   margin: 10px 0;
   line-height: 1.6;
-}
-
-@media screen and (min-width: 768px) {
-  .user-personal-info {
-    width: 100%;
-    padding: 20px;
-  }
 }
 </style>
