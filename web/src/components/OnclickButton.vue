@@ -31,6 +31,7 @@ const handleClick = () => {
 
 <style scoped>
 .btn {
+  margin: 10px 0;
   display: inline-block;
   padding: 10px;
   font-size: 16px;

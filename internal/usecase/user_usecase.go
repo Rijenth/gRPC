@@ -2,11 +2,10 @@ package usecase
 
 import (
 	"context"
-	"time"
 
 	"github.com/rijenth/gRPC/internal/contextkeys"
 	"github.com/rijenth/gRPC/internal/domain"
-	pb "github.com/rijenth/gRPC/internal/grpc/user"
+	pbUser "github.com/rijenth/gRPC/internal/grpc/user"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -17,6 +16,7 @@ type UserRepository interface {
 	GetUserByID(ctx context.Context, id int) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+	UpdateUserPassword(ctx context.Context, user *domain.User) (*domain.User, error)
 	DeleteUser(ctx context.Context, id int) error
 }
 
@@ -40,7 +40,7 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, user *domain.User) (*doma
 	return uc.repository.CreateUser(ctx, user)
 }
 
-func (uc *UserUsecase) UpdateUser(ctx context.Context, request *pb.UpdateUserRequest) (*domain.User, error) {
+func (uc *UserUsecase) UpdateUser(ctx context.Context, request *pbUser.UpdateUserRequest) (*domain.User, error) {
 	user, err := uc.repository.GetUserByID(ctx, int(request.Id))
 
 	if err != nil {
@@ -109,9 +109,11 @@ func (uc *UserUsecase) UpdateUser(ctx context.Context, request *pb.UpdateUserReq
 		user.IsAdmin = request.IsAdmin
 	}
 
-	user.UpdatedAt = time.Now()
-
 	return uc.repository.UpdateUser(ctx, user)
+}
+
+func (uc *UserUsecase) UpdateUserPassword(ctx context.Context, user *domain.User) (*domain.User, error) {
+	return uc.repository.UpdateUserPassword(ctx, user)
 }
 
 func (uc *UserUsecase) DeleteUser(ctx context.Context, id int) error {
