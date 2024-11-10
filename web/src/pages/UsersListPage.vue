@@ -2,24 +2,22 @@
 import { computed, onMounted, ref } from "vue";
 import { User } from "../generated/user";
 import { ResponsiveTableType } from "../types/responsive_table.type";
-import ErrorMessage from "../components/ErrorMessage.vue";
 import ResponsiveTable from "../components/ResponsiveTable.vue";
 import UserApi from "../api/user.api";
 import UserDetailsModal from "../widgets/UserDetailsModal.vue";
+import { useToast } from "../state/useToast";
 
+const toast = useToast();
 const userApi = new UserApi();
-const errorMessage = ref<string | null>(null);
 const users = ref<User[]>([]);
 const showModal = ref<boolean>(false);
 const selectedUser = ref<User | null>(null);
 
 const fetchAllUsers = async () => {
-  errorMessage.value = null;
-
   const response = await userApi.index();
 
   if (typeof response === "string") {
-    errorMessage.value = response;
+    toast.notify(response, "error");
     return;
   }
 
@@ -31,7 +29,7 @@ const fetchAllUsers = async () => {
     return;
   }
 
-  errorMessage.value = "Impossible de récupérer la liste des utilisateurs";
+  toast.notify("Impossible de récupérer la liste des utilisateurs", "error");
 };
 
 const handleResponsiveTableRowClick = (row: Record<string, string>) => {
@@ -86,8 +84,6 @@ onMounted(() => {
 
 <template>
   <div class="container">
-    <ErrorMessage v-if="errorMessage" :message="errorMessage" />
-
     <ResponsiveTable
       :table="tableData.value"
       @responsive-table:row-click="handleResponsiveTableRowClick"
