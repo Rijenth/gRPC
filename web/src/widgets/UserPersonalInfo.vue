@@ -8,31 +8,29 @@ import DatePicker from "../components/DatePicker.vue";
 import { Timestamp } from "../generated/google/protobuf/timestamp";
 import UserApi from "../api/user.api";
 import { useAuth } from "../state/useAuth";
-import ErrorMessage from "../components/ErrorMessage.vue";
 import router from "../router/router";
 import BasicCard from "../components/BasicCard.vue";
+import { useToast } from "../state/useToast";
 
 const props = defineProps<{
   updateMode?: boolean;
   username?: string;
 }>();
 
+const toast = useToast();
 const userApi = new UserApi();
 const auth = useAuth();
 
 const user = ref<UserModel | null>(null);
-const fetchAndFillUserErrorMessage = ref<string>("");
-const patchUserErrorMessage = ref<string>("");
 const allowUpdate = ref<boolean>(false);
 const updateButtonDisabled = ref<boolean>(false);
 
 const patchUser = async () => {
-  fetchAndFillUserErrorMessage.value = "";
-  patchUserErrorMessage.value = "";
-
   if (!user.value) {
-    patchUserErrorMessage.value =
-      "Unable to update user information, no user provided";
+    toast.notify(
+      "Impossible de mettre à jour les informations de l'utilisateur, aucun utilisateur fourni",
+      "error",
+    );
     fetchAndFillUser();
     return;
   }
@@ -42,14 +40,16 @@ const patchUser = async () => {
   const response = await userApi.patch(user.value.updateUserRequestFormat());
 
   if (typeof response === "string") {
-    patchUserErrorMessage.value = response;
+    toast.notify(response, "error");
     fetchAndFillUser();
     return;
   }
 
   if (!response.user) {
-    patchUserErrorMessage.value =
-      "Unable to update user information on the server";
+    toast.notify(
+      "Impossible de récupérer les informations de l'utilisateur depuis le serveur",
+      "error",
+    );
     fetchAndFillUser();
     return;
   }
@@ -64,26 +64,28 @@ const patchUser = async () => {
 };
 
 const fetchAndFillUser = async () => {
-  fetchAndFillUserErrorMessage.value = "";
-
   let username = props.username ?? auth.state.username;
 
   if (!username) {
-    fetchAndFillUserErrorMessage.value =
-      "Unable to retrieve user information, no username provided";
+    toast.notify(
+      "Impossible de récupérer les informations de l'utilisateur, aucun nom d'utilisateur fourni",
+      "error",
+    );
     return;
   }
 
   const response = await userApi.getByUsername(username);
 
   if (typeof response === "string") {
-    fetchAndFillUserErrorMessage.value = response;
+    toast.notify(response, "error");
     return;
   }
 
   if (!response.user) {
-    fetchAndFillUserErrorMessage.value =
-      "Unable to retrieve user information from the server";
+    toast.notify(
+      "Impossible de récupérer les informations de l'utilisateur depuis le serveur",
+      "error",
+    );
     return;
   }
 
@@ -97,15 +99,6 @@ onMounted(async () => {
 
 <template>
   <BasicCard :title="'Informations personnelles'">
-    <ErrorMessage
-      v-if="fetchAndFillUserErrorMessage"
-      :message="fetchAndFillUserErrorMessage"
-    />
-    <ErrorMessage
-      v-if="patchUserErrorMessage"
-      :message="patchUserErrorMessage"
-    />
-
     <EditableParagraph
       v-if="user"
       :params="{

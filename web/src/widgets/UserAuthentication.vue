@@ -1,23 +1,24 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import OnclickButton from "../components/OnclickButton.vue";
-import ErrorMessage from "../components/ErrorMessage.vue";
 import { useAuth } from "../state/useAuth";
 import LabelledInput from "../components/LabelledInput.vue";
 import AuthApi from "../api/auth.api";
 import { jwtDecode } from "jwt-decode";
+import { useToast } from "../state/useToast";
 
 const auth = useAuth();
+const toast = useToast();
 const authApi = new AuthApi();
 const username = ref<string>("");
 const password = ref<string>("");
-const errorMessage = ref<string>("");
 
 const handleLogin = async () => {
-  errorMessage.value = "";
-
   if (!username.value || !password.value) {
-    errorMessage.value = "Veuillez remplir tous les champs";
+    toast.notify(
+      "Veuillez entrer un nom d'utilisateur et un mot de passe",
+      "error",
+    );
     return;
   }
 
@@ -34,15 +35,13 @@ const handleLogin = async () => {
     return;
   }
 
-  errorMessage.value = response;
+  toast.notify(response, "error");
 };
 </script>
 
 <template>
   <div class="login-box">
     <h2>Connexion</h2>
-
-    <ErrorMessage v-if="errorMessage" :message="errorMessage" />
 
     <LabelledInput
       label="Nom d'utilisateur"

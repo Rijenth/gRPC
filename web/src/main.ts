@@ -6,7 +6,7 @@ import Vue3Toastify from "vue3-toastify";
 
 createApp(App)
   .use(Vue3Toastify, {
-    position: "bottom-center",
+    position: "top-right",
     theme: "light",
   })
   .use(router)
