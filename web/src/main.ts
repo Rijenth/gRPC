@@ -2,5 +2,12 @@ import { createApp } from "vue";
 import "./style.css";
 import App from "./App.vue";
 import router from "./router/router";
+import Vue3Toastify from "vue3-toastify";
 
-createApp(App).use(router).mount("#app");
+createApp(App)
+  .use(Vue3Toastify, {
+    position: "bottom-center",
+    theme: "light",
+  })
+  .use(router)
+  .mount("#app");
