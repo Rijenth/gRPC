@@ -28,10 +28,8 @@ const handleLogin = async () => {
     const decodedToken = response.token
       ? (jwtDecode(response.token) as { name?: string; sub?: string })
       : null;
-    const username = decodedToken?.name || undefined;
-    const userId = decodedToken?.sub || undefined;
 
-    auth.login(response.token, username, userId);
+    auth.login(response.token, decodedToken?.name, decodedToken?.sub);
 
     return;
   }
