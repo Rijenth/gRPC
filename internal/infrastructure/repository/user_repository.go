@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"strconv"
 
 	"github.com/rijenth/gRPC/internal/contextkeys"
 	"github.com/rijenth/gRPC/internal/domain"
@@ -95,7 +96,7 @@ func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, id int) (*domain.U
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, status.Errorf(codes.NotFound, "user with id %s not found", id)
+			return nil, status.Errorf(codes.NotFound, "user with id %s not found", strconv.Itoa(id))
 		}
 
 		return nil, status.Errorf(codes.Internal, "failed to scan user: %v", err)
@@ -118,7 +119,7 @@ func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, user *domain.User) 
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, status.Errorf(codes.NotFound, "user with id %s not found", user.ID)
+			return nil, status.Errorf(codes.NotFound, "user with id %s not found", strconv.Itoa(user.ID))
 		}
 
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
@@ -135,7 +136,23 @@ func (r *UserRepositoryImpl) UpdateUserPassword(ctx context.Context, user *domai
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, status.Errorf(codes.NotFound, "user with id %s not found", user.ID)
+			return nil, status.Errorf(codes.NotFound, "user with id %s not found", strconv.Itoa(user.ID))
+		}
+
+		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
+	}
+
+	return user, nil
+}
+
+func (r *UserRepositoryImpl) UpdateUserLastLogin(ctx context.Context, user *domain.User) (*domain.User, error) {
+	query := `UPDATE users SET last_login = ? WHERE id = ?`
+
+	_, err := r.db.ExecContext(ctx, query, user.LastLogin, user.ID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Errorf(codes.NotFound, "user with id %s not found", strconv.Itoa(user.ID))
 		}
 
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)

@@ -26,11 +26,12 @@ const handleLogin = async () => {
 
   if (typeof response !== "string") {
     const decodedToken = response.token
-      ? (jwtDecode(response.token) as { name?: string })
+      ? (jwtDecode(response.token) as { name?: string; sub?: string })
       : null;
     const username = decodedToken?.name || undefined;
+    const userId = decodedToken?.sub || undefined;
 
-    auth.login(response.token, username);
+    auth.login(response.token, username, userId);
 
     return;
   }

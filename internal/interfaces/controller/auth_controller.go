@@ -2,11 +2,12 @@ package controller
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/rijenth/gRPC/internal/domain"
-	pb "github.com/rijenth/gRPC/internal/grpc/auth"
+	pbAuth "github.com/rijenth/gRPC/internal/grpc/auth"
 	"github.com/rijenth/gRPC/internal/infrastructure/services"
 	"github.com/rijenth/gRPC/internal/usecase"
 	"google.golang.org/grpc/codes"
@@ -17,14 +18,14 @@ type AuthController struct {
 	passwordHasher *services.BcryptPasswordHasher
 	usecase        *usecase.UserUsecase
 	JWTsecretKey   string
-	pb.UnimplementedAuthServiceServer
+	pbAuth.UnimplementedAuthServiceServer
 }
 
 func NewAuthController(uc *usecase.UserUsecase, bcryptPasswordHasher *services.BcryptPasswordHasher, secretKey string) *AuthController {
 	return &AuthController{usecase: uc, passwordHasher: bcryptPasswordHasher, JWTsecretKey: secretKey}
 }
 
-func (authController *AuthController) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
+func (authController *AuthController) Login(ctx context.Context, req *pbAuth.LoginRequest) (*pbAuth.LoginResponse, error) {
 	user, err := authController.usecase.GetUserByUsername(ctx, req.Username)
 
 	if err != nil {
@@ -39,7 +40,7 @@ func (authController *AuthController) Login(ctx context.Context, req *pb.LoginRe
 	expirationTime := time.Now().Add(expiresIn)
 
 	claims := &domain.JWTClaims{
-		UserID:   string(user.ID),
+		UserID:   strconv.Itoa(user.ID),
 		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
@@ -52,13 +53,15 @@ func (authController *AuthController) Login(ctx context.Context, req *pb.LoginRe
 		return nil, status.Errorf(codes.Internal, "could not generate token: %v", err)
 	}
 
-	return &pb.LoginResponse{
+	authController.usecase.UpdateUserLastLogin(ctx, user)
+
+	return &pbAuth.LoginResponse{
 		Token:     tokenString,
 		ExpiresIn: int64(expiresIn.Seconds()),
 	}, nil
 }
 
-func (authController *AuthController) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest) (*pb.UpdatePasswordResponse, error) {
+func (authController *AuthController) UpdatePassword(ctx context.Context, req *pbAuth.UpdatePasswordRequest) (*pbAuth.UpdatePasswordResponse, error) {
 	user, err := authController.usecase.GetUserByUsername(ctx, req.Username)
 
 	if err != nil {
@@ -82,7 +85,7 @@ func (authController *AuthController) UpdatePassword(ctx context.Context, req *p
 		return nil, err
 	}
 
-	return &pb.UpdatePasswordResponse{
+	return &pbAuth.UpdatePasswordResponse{
 		Success: true,
 	}, nil
 }
