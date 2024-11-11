@@ -18,7 +18,7 @@ type UserRepository interface {
 	CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	UpdateUserPassword(ctx context.Context, user *domain.User) (*domain.User, error)
-	UpdateUserLastLogin(ctx context.Context, user *domain.User) (*domain.User, error)
+	UpdateUserLoginState(ctx context.Context, user *domain.User) (*domain.User, error)
 	DeleteUser(ctx context.Context, id int) error
 }
 
@@ -118,12 +118,16 @@ func (uc *UserUsecase) UpdateUserPassword(ctx context.Context, user *domain.User
 	return uc.repository.UpdateUserPassword(ctx, user)
 }
 
-func (uc *UserUsecase) UpdateUserLastLogin(ctx context.Context, user *domain.User) (*domain.User, error) {
-	currentTime := time.Now()
+func (uc *UserUsecase) UpdateUserLoginState(ctx context.Context, user *domain.User, isActive bool) (*domain.User, error) {
+	if isActive {
+		currentTime := time.Now()
 
-	user.LastLogin = &currentTime
+		user.LastLogin = &currentTime
+	}
 
-	return uc.repository.UpdateUserLastLogin(ctx, user)
+	user.IsActive = isActive
+
+	return uc.repository.UpdateUserLoginState(ctx, user)
 }
 
 func (uc *UserUsecase) DeleteUser(ctx context.Context, id int) error {

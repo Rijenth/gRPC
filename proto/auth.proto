@@ -7,6 +7,7 @@ option go_package = "internal/grpc/auth";
 service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
 }
 
 message LoginRequest {
@@ -26,5 +27,11 @@ message UpdatePasswordRequest {
 }
 
 message UpdatePasswordResponse {
+  bool success = 1;
+}
+
+message LogoutRequest {}
+
+message LogoutResponse {
   bool success = 1;
 }

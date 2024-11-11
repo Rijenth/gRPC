@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/rijenth/gRPC/internal/contextkeys"
 	"github.com/rijenth/gRPC/internal/domain"
 	pbAuth "github.com/rijenth/gRPC/internal/grpc/auth"
 	"github.com/rijenth/gRPC/internal/infrastructure/services"
@@ -53,7 +54,7 @@ func (authController *AuthController) Login(ctx context.Context, req *pbAuth.Log
 		return nil, status.Errorf(codes.Internal, "could not generate token: %v", err)
 	}
 
-	authController.usecase.UpdateUserLastLogin(ctx, user)
+	authController.usecase.UpdateUserLoginState(ctx, user, true)
 
 	return &pbAuth.LoginResponse{
 		Token:     tokenString,
@@ -86,6 +87,26 @@ func (authController *AuthController) UpdatePassword(ctx context.Context, req *p
 	}
 
 	return &pbAuth.UpdatePasswordResponse{
+		Success: true,
+	}, nil
+}
+
+func (authController *AuthController) Logout(ctx context.Context, req *pbAuth.LogoutRequest) (*pbAuth.LogoutResponse, error) {
+	authenticatedUsername, _ := ctx.Value(contextkeys.AuthenticatedUserUsernameKey).(string)
+
+	if authenticatedUsername == "" {
+		return &pbAuth.LogoutResponse{
+			Success: true,
+		}, nil
+	}
+
+	user, _ := authController.usecase.GetUserByUsername(ctx, authenticatedUsername)
+
+	if user != nil {
+		authController.usecase.UpdateUserLoginState(ctx, user, false)
+	}
+
+	return &pbAuth.LogoutResponse{
 		Success: true,
 	}, nil
 }

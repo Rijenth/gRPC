@@ -63,6 +63,20 @@ export interface UpdatePasswordResponse {
      */
     success: boolean;
 }
+/**
+ * @generated from protobuf message auth.LogoutRequest
+ */
+export interface LogoutRequest {
+}
+/**
+ * @generated from protobuf message auth.LogoutResponse
+ */
+export interface LogoutResponse {
+    /**
+     * @generated from protobuf field: bool success = 1;
+     */
+    success: boolean;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class LoginRequest$Type extends MessageType<LoginRequest> {
     constructor() {
@@ -283,10 +297,83 @@ class UpdatePasswordResponse$Type extends MessageType<UpdatePasswordResponse> {
  * @generated MessageType for protobuf message auth.UpdatePasswordResponse
  */
 export const UpdatePasswordResponse = new UpdatePasswordResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class LogoutRequest$Type extends MessageType<LogoutRequest> {
+    constructor() {
+        super("auth.LogoutRequest", []);
+    }
+    create(value?: PartialMessage<LogoutRequest>): LogoutRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<LogoutRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LogoutRequest): LogoutRequest {
+        return target ?? this.create();
+    }
+    internalBinaryWrite(message: LogoutRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message auth.LogoutRequest
+ */
+export const LogoutRequest = new LogoutRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class LogoutResponse$Type extends MessageType<LogoutResponse> {
+    constructor() {
+        super("auth.LogoutResponse", [
+            { no: 1, name: "success", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+        ]);
+    }
+    create(value?: PartialMessage<LogoutResponse>): LogoutResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.success = false;
+        if (value !== undefined)
+            reflectionMergePartial<LogoutResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LogoutResponse): LogoutResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* bool success */ 1:
+                    message.success = reader.bool();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: LogoutResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* bool success = 1; */
+        if (message.success !== false)
+            writer.tag(1, WireType.Varint).bool(message.success);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message auth.LogoutResponse
+ */
+export const LogoutResponse = new LogoutResponse$Type();
 /**
  * @generated ServiceType for protobuf service auth.AuthService
  */
 export const AuthService = new ServiceType("auth.AuthService", [
     { name: "Login", options: {}, I: LoginRequest, O: LoginResponse },
-    { name: "UpdatePassword", options: {}, I: UpdatePasswordRequest, O: UpdatePasswordResponse }
+    { name: "UpdatePassword", options: {}, I: UpdatePasswordRequest, O: UpdatePasswordResponse },
+    { name: "Logout", options: {}, I: LogoutRequest, O: LogoutResponse }
 ]);

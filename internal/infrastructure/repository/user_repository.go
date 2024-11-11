@@ -145,10 +145,10 @@ func (r *UserRepositoryImpl) UpdateUserPassword(ctx context.Context, user *domai
 	return user, nil
 }
 
-func (r *UserRepositoryImpl) UpdateUserLastLogin(ctx context.Context, user *domain.User) (*domain.User, error) {
-	query := `UPDATE users SET last_login = ? WHERE id = ?`
+func (r *UserRepositoryImpl) UpdateUserLoginState(ctx context.Context, user *domain.User) (*domain.User, error) {
+	query := `UPDATE users SET last_login = ?, is_active = ? WHERE id = ?`
 
-	_, err := r.db.ExecContext(ctx, query, user.LastLogin, user.ID)
+	_, err := r.db.ExecContext(ctx, query, user.LastLogin, user.IsActive, user.ID)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
