@@ -1,22 +1,3 @@
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    date_of_birth DATE,
-    address VARCHAR(255),
-    phone_number VARCHAR(20),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    last_login TIMESTAMP NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    is_admin BOOLEAN DEFAULT FALSE,
-    profile_picture VARCHAR(255),
-    bio TEXT
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 INSERT INTO users (username, password, email, first_name, last_name, date_of_birth, address, phone_number, last_login, is_active, is_admin, profile_picture, bio) VALUES
 ('alice_d', '$2a$10$.yyVfpcnOrsn28X6Bg5jveYeyhRsCLR/ayrs9ZhGZr5mXtwE2w/ZG', 'alice.dupont@example.com', 'Alice', 'Dupont', '1990-05-14', '123 Rue Principale, Paris', '0612345678', '2023-09-01 08:30:00', TRUE, FALSE, '/images/alice_d.png', 'Passionnee de photographie et de voyages.'),
 ('bob_m', '$2a$10$.yyVfpcnOrsn28X6Bg5jveYeyhRsCLR/ayrs9ZhGZr5mXtwE2w/ZG', 'bob.martin@example.com', 'Bob', 'Martin', '1985-08-22', '456 Avenue des Champs, Lyon', '0623456789', '2023-09-02 09:15:00', TRUE, FALSE, '/images/bob_m.png', 'Amateur de cuisine et de musique jazz.'),
