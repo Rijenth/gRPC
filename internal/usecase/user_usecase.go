@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"time"
 
 	"github.com/rijenth/gRPC/internal/contextkeys"
 	"github.com/rijenth/gRPC/internal/domain"
@@ -17,6 +18,7 @@ type UserRepository interface {
 	CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	UpdateUserPassword(ctx context.Context, user *domain.User) (*domain.User, error)
+	UpdateUserLoginState(ctx context.Context, user *domain.User) (*domain.User, error)
 	DeleteUser(ctx context.Context, id int) error
 }
 
@@ -114,6 +116,18 @@ func (uc *UserUsecase) UpdateUser(ctx context.Context, request *pbUser.UpdateUse
 
 func (uc *UserUsecase) UpdateUserPassword(ctx context.Context, user *domain.User) (*domain.User, error) {
 	return uc.repository.UpdateUserPassword(ctx, user)
+}
+
+func (uc *UserUsecase) UpdateUserLoginState(ctx context.Context, user *domain.User, isActive bool) (*domain.User, error) {
+	if isActive {
+		currentTime := time.Now()
+
+		user.LastLogin = &currentTime
+	}
+
+	user.IsActive = isActive
+
+	return uc.repository.UpdateUserLoginState(ctx, user)
 }
 
 func (uc *UserUsecase) DeleteUser(ctx context.Context, id int) error {

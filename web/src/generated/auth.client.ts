@@ -4,6 +4,8 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { AuthService } from "./auth";
+import type { LogoutResponse } from "./auth";
+import type { LogoutRequest } from "./auth";
 import type { UpdatePasswordResponse } from "./auth";
 import type { UpdatePasswordRequest } from "./auth";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
@@ -23,6 +25,10 @@ export interface IAuthServiceClient {
      * @generated from protobuf rpc: UpdatePassword(auth.UpdatePasswordRequest) returns (auth.UpdatePasswordResponse);
      */
     updatePassword(input: UpdatePasswordRequest, options?: RpcOptions): UnaryCall<UpdatePasswordRequest, UpdatePasswordResponse>;
+    /**
+     * @generated from protobuf rpc: Logout(auth.LogoutRequest) returns (auth.LogoutResponse);
+     */
+    logout(input: LogoutRequest, options?: RpcOptions): UnaryCall<LogoutRequest, LogoutResponse>;
 }
 /**
  * @generated from protobuf service auth.AuthService
@@ -46,5 +52,12 @@ export class AuthServiceClient implements IAuthServiceClient, ServiceInfo {
     updatePassword(input: UpdatePasswordRequest, options?: RpcOptions): UnaryCall<UpdatePasswordRequest, UpdatePasswordResponse> {
         const method = this.methods[1], opt = this._transport.mergeOptions(options);
         return stackIntercept<UpdatePasswordRequest, UpdatePasswordResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: Logout(auth.LogoutRequest) returns (auth.LogoutResponse);
+     */
+    logout(input: LogoutRequest, options?: RpcOptions): UnaryCall<LogoutRequest, LogoutResponse> {
+        const method = this.methods[2], opt = this._transport.mergeOptions(options);
+        return stackIntercept<LogoutRequest, LogoutResponse>("unary", this._transport, method, opt, input);
     }
 }

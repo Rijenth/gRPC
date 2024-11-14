@@ -1,4 +1,8 @@
-import { LoginResponse, UpdatePasswordResponse } from "../generated/auth";
+import {
+  LoginResponse,
+  LogoutResponse,
+  UpdatePasswordResponse,
+} from "../generated/auth";
 import { AuthServiceClient } from "../generated/auth.client";
 import Api from "./api";
 
@@ -50,5 +54,11 @@ export default class AuthApi extends Api {
         "[auth.api.ts] Erreur lors de la tentative de mise à jour du mot de passe",
       );
     }
+  }
+
+  public async logout(): Promise<LogoutResponse> {
+    const request = await this.authServiceClient.logout({});
+
+    return request.response;
   }
 }
